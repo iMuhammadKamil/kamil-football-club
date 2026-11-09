@@ -1,0 +1,241 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PLAYER
+  GROUND_OWNER
+  CARETAKER
+  ADMIN
+}
+
+enum SportType {
+  FOOTBALL_5A_SIDE
+  FOOTBALL_7A_SIDE
+  FOOTBALL_11A_SIDE
+  PADEL
+  CRICKET_HARDBALL
+  CRICKET_TAPEBALL
+  BADMINTON
+  RUNNING_TRACK
+}
+
+enum SlotStatus {
+  AVAILABLE
+  HOLD_LOCKED
+  AWAITING_VERIFICATION
+  BOOKED
+  MAINTENANCE
+}
+
+enum PaymentStatus {
+  PENDING_VERIFICATION
+  PARTIALLY_PAID
+  PAID
+  CANCELLED
+}
+
+enum PaymentMethod {
+  RAAST_QR
+  JAZZCASH
+  EASYPAISA
+  CASH_ON_ARRIVAL
+}
+
+enum CheckInStatus {
+  PENDING
+  CHECKED_IN
+  NO_SHOW
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String?   @unique
+  phone         String    @unique
+  passwordHash  String
+  role          Role      @default(PLAYER)
+  raastId       String?   // For captains collecting squad pay or owners
+  strikeCount   Int       @default(0) // Tracks no-shows or defaulted payments
+  isBlacklisted Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  grounds       Ground[]  @relation("OwnerGrounds")
+  caretakerAt   Ground[]  @relation("CaretakerGrounds")
+  teamsCaptained Team[]   @relation("CaptainTeams")
+  bookings      Booking[]
+  auditLogs     CaretakerAuditLog[]
+}
+
+model Team {
+  id          String    @id @default(cuid())
+  name        String
+  captainId   String
+  captain     User      @relation("CaptainTeams", fields: [captainId], references: [id])
+  city        String
+  createdAt   DateTime  @default(now())
+
+  bookings    Booking[]
+}
+
+model Ground {
+  id                  String    @id @default(cuid())
+  ownerId             String
+  owner               User      @relation("OwnerGrounds", fields: [ownerId], references: [id])
+  name                String
+  slug                String    @unique
+  description         String?
+  city                String    // Karachi, Lahore, Islamabad, Rawalpindi
+  area                String    // DHA Phase 6, Gulberg, F-7, etc.
+  address             String
+  lat                 Float
+  lng                 Float
+  featuredImg         String
+  images              String[]  @default([])
+  amenities           String[]  @default([])
+  rating              Float     @default(4.9)
+  
+  // Power & Operating Surcharges
+  hasGenerator        Boolean   @default(true)
+  generatorSurcharge  Int       @default(1500) // PKR added during load shedding
+  isGeneratorActive   Boolean   @default(false)
+  bufferMinutes       Int       @default(10)   // 50-min game + 10-min changeover buffer
+  
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  caretakers          User[]    @relation("CaretakerGrounds")
+  pitches             Pitch[]
+  tournaments         Tournament[]
+  auditLogs           CaretakerAuditLog[]
+}
+
+model Pitch {
+  id            String    @id @default(cuid())
+  groundId      String
+  ground        Ground    @relation(fields: [groundId], references: [id], onDelete: Cascade)
+  name          String    // e.g. "Main Stadium (11-a-Side)", "Court A (Padel)"
+  sportType     SportType
+  surfaceType   String    // e.g. "FIFA Quality Pro 50mm", "Tempered Glass Court"
+  dimensions    String?   // e.g. "100m x 64m"
+  pricePerHour  Int       // In PKR
+  isActive      Boolean   @default(true)
+
+  slots         Slot[]
+}
+
+model Slot {
+  id            String      @id @default(cuid())
+  pitchId       String
+  pitch         Pitch       @relation(fields: [pitchId], references: [id], onDelete: Cascade)
+  date          DateTime    @db.Date
+  startTime     String      // "20:00"
+  endTime       String      // "21:00"
+  price         Int         // Base price in PKR
+  status        SlotStatus  @default(AVAILABLE)
+  holdExpiresAt DateTime?
+
+  booking       Booking?
+}
+
+model Booking {
+  id              String        @id @default(cuid())
+  slotId          String        @unique
+  slot            Slot          @relation(fields: [slotId], references: [id])
+  userId          String
+  user            User          @relation(fields: [userId], references: [id])
+  teamId          String?
+  team            Team?         @relation(fields: [teamId], references: [id])
+  
+  pinCode         String        // 4-digit numeric code for caretaker check-in
+  baseAmount      Int           // Slot base rate
+  surchargeAmount Int           @default(0) // Generator or peak floodlight fee
+  addOnsAmount    Int           @default(0)
+  totalAmount     Int           // In PKR
+  depositAmount   Int           // In PKR (paid online)
+  remainingAmount Int           // In PKR (due in cash at pitch)
+  
+  paymentMethod   PaymentMethod @default(RAAST_QR)
+  paymentStatus   PaymentStatus @default(PENDING_VERIFICATION)
+  proofImage      String?       // Screenshot of Raast/JazzCash transaction
+  transactionRef  String?       // 6-12 digit TRX ID from bank app
+  verifiedByOwner Boolean       @default(false)
+
+  captainLiable   Boolean       @default(true) // Captain guarantees balance if squad defaults
+  checkInStatus   CheckInStatus @default(PENDING)
+  checkedInAt     DateTime?
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  addOns          BookingAddOn[]
+  squadSplits     SquadSplit[]
+}
+
+model AddOn {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Int      // In PKR
+  icon        String
+
+  bookings    BookingAddOn[]
+}
+
+model BookingAddOn {
+  id        String   @id @default(cuid())
+  bookingId String
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  addOnId   String
+  addOn     AddOn    @relation(fields: [addOnId], references: [id])
+  quantity  Int      @default(1)
+  price     Int
+}
+
+model SquadSplit {
+  id          String    @id @default(cuid())
+  bookingId   String
+  booking     Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  playerName  String
+  playerPhone String?
+  shareAmount Int
+  isPaid      Boolean   @default(false)
+  paidAt      DateTime?
+}
+
+// Anti-Theft Audit Trail for Caretakers & Ground Managers
+model CaretakerAuditLog {
+  id          String   @id @default(cuid())
+  groundId    String
+  ground      Ground   @relation(fields: [groundId], references: [id], onDelete: Cascade)
+  caretakerId String
+  caretaker   User     @relation(fields: [caretakerId], references: [id])
+  actionType  String   // "CHECKIN_VERIFIED", "CASH_COLLECTED", "WALK_IN_BLOCKED"
+  bookingRef  String?
+  customerPhone String?
+  amountCollected Int  @default(0)
+  timestamp   DateTime @default(now())
+}
+
+model Tournament {
+  id            String    @id @default(cuid())
+  groundId      String
+  ground        Ground    @relation(fields: [groundId], references: [id])
+  title         String
+  sportType     SportType
+  startDate     DateTime
+  endDate       DateTime?
+  entryFee      Int       // In PKR per team
+  prizePool     Int       // In PKR
+  maxTeams      Int       @default(16)
+  rules         String?
+  status        String    @default("UPCOMING")
+  bracketData   Json?
+  createdAt     DateTime  @default(now())
+}
