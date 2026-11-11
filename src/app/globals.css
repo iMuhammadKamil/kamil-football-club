@@ -3,56 +3,79 @@
 @tailwind utilities;
 
 :root {
-  --background: #070a0f;
-  --foreground: #f1f5f9;
+  --pitch-obsidian: #090d10;
+  --turf-surface: #0d1914;
+  --stadium-border: #1b2a22;
+  --floodlight-white: #f8fafc;
+  --pitch-green: #00e575;
+  --stadium-amber: #ffb300;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--floodlight-white);
+  background: var(--pitch-obsidian);
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Custom scrollbar for cyber/dark theme */
+/* Subtle stadium night atmosphere */
+.stadium-mesh-bg {
+  background-image: 
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 229, 117, 0.08), transparent 70%),
+    radial-gradient(circle at 100% 30%, rgba(255, 179, 0, 0.04), transparent 50%),
+    linear-gradient(to bottom, #090d10, #0a110e);
+}
+
+/* Authentic stadium ticket perforation */
+.ticket-perforation {
+  position: relative;
+}
+.ticket-perforation::before,
+.ticket-perforation::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  background-color: #090d10;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+}
+.ticket-perforation::before {
+  left: -8px;
+}
+.ticket-perforation::after {
+  right: -8px;
+}
+
+/* Custom athletic scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #070a0f;
+  background: #090d10;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e2c44;
+  background: #1b2a22;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #00ff87;
+  background: #00e575;
 }
 
-/* Glow utility classes */
-.glow-neon-green {
-  box-shadow: 0 0 25px -4px rgba(0, 255, 135, 0.4);
-}
-.glow-neon-cyan {
-  box-shadow: 0 0 25px -4px rgba(0, 229, 255, 0.4);
-}
-.glow-neon-yellow {
-  box-shadow: 0 0 25px -4px rgba(212, 255, 0, 0.4);
-}
-.glow-text-green {
-  text-shadow: 0 0 12px rgba(0, 255, 135, 0.6);
-}
-.glow-text-cyan {
-  text-shadow: 0 0 12px rgba(0, 229, 255, 0.6);
+/* Focused architectural borders */
+.stadium-border {
+  border: 1px solid rgba(27, 42, 34, 0.9);
 }
 
-/* Custom glassmorphism card */
-.glass-panel {
-  background: rgba(13, 19, 31, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(31, 46, 71, 0.8);
+.stadium-card {
+  background: #0c1611;
+  border: 1px solid #17261e;
+  transition: border-color 0.2s ease, transform 0.2s ease;
 }
-
+.stadium-card:hover {
+  border-color: rgba(0, 229, 117, 0.45);
+}

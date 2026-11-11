@@ -48,24 +48,24 @@ export default function GroundCard({ venue, onSelectVenue, userDistanceKm }: Gro
   const has11aSide = venue.pitches.some((p) => p.sportType === "FOOTBALL_11A_SIDE");
 
   return (
-    <div className="group relative rounded-2xl bg-dark-card border border-dark-border hover:border-neon-green/60 transition-all duration-300 overflow-hidden flex flex-col hover:shadow-neon-green/10 hover:shadow-xl">
+    <div className="group relative rounded-2xl bg-[#0C1611] border border-[#17261E] hover:border-[#00E575]/50 transition-all duration-300 overflow-hidden flex flex-col shadow-lg">
       {/* Featured Badge for 11-a-side */}
       {has11aSide && (
-        <div className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-neon-green text-[#070A0F] shadow-lg flex items-center gap-1">
+        <div className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#00E575] text-[#090D10] shadow-lg flex items-center gap-1">
           <Flame className="w-3.5 h-3.5 fill-current" />
-          Full 11-a-Side Arena
+          Full Stadium
         </div>
       )}
 
       {/* Rating badge */}
-      <div className="absolute top-3 right-3 z-10 px-2 py-1 rounded-lg bg-[#070A0F]/80 backdrop-blur-md border border-dark-border text-xs font-bold text-white flex items-center gap-1">
-        <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
+      <div className="absolute top-3 right-3 z-10 px-2 py-1 rounded-lg bg-[#090D10]/90 backdrop-blur-md border border-[#17261E] text-xs font-bold text-white flex items-center gap-1">
+        <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
         <span>{venue.rating}</span>
         <span className="text-gray-400 text-[10px]">({venue.reviewCount})</span>
       </div>
 
       {/* Image container with link to /venue/[slug] */}
-      <Link href={`/venue/${venue.slug}`} className="relative h-48 sm:h-52 w-full overflow-hidden bg-dark-elevated block">
+      <Link href={`/venue/${venue.slug}`} className="relative h-48 sm:h-52 w-full overflow-hidden bg-[#0A130F] block">
         <img
           src={venue.featuredImg}
           alt={venue.name}
@@ -75,16 +75,16 @@ export default function GroundCard({ venue, onSelectVenue, userDistanceKm }: Gro
             (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=80";
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0D131F] via-[#0D131F]/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0C1611] via-[#0C1611]/30 to-transparent" />
 
         {/* Location pill on image */}
         <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs text-gray-200">
           <div className="flex items-center gap-1.5 font-medium truncate">
-            <MapPin className="w-4 h-4 text-neon-green shrink-0" />
+            <MapPin className="w-4 h-4 text-[#00E575] shrink-0" />
             <span className="truncate">{venue.area}, {venue.city}</span>
           </div>
           {userDistanceKm !== undefined && (
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/40">
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#00E575]/20 text-[#00E575] border border-[#00E575]/40">
               {userDistanceKm} km away
             </span>
           )}
@@ -95,9 +95,9 @@ export default function GroundCard({ venue, onSelectVenue, userDistanceKm }: Gro
       <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-4">
         <div>
           <Link href={`/venue/${venue.slug}`}>
-            <h3 className="text-lg font-bold text-white group-hover:text-neon-green transition-colors font-display line-clamp-1 flex items-center justify-between">
+            <h3 className="text-lg font-bold text-white group-hover:text-[#00E575] transition-colors font-display line-clamp-1 flex items-center justify-between">
               <span>{venue.name}</span>
-              <ExternalLink className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-neon-green" />
+              <ExternalLink className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-[#00E575]" />
             </h3>
           </Link>
           <p className="text-xs text-gray-400 mt-1 line-clamp-2">
@@ -121,10 +121,10 @@ export default function GroundCard({ venue, onSelectVenue, userDistanceKm }: Gro
         </div>
 
         {/* Pricing & CTA */}
-        <div className="pt-3 border-t border-dark-border/60 flex items-center justify-between">
+        <div className="pt-3 border-t border-[#17261E] flex items-center justify-between">
           <div>
             <span className="text-[11px] text-gray-400 block">Starting from</span>
-            <span className="text-base sm:text-lg font-extrabold text-neon-green">
+            <span className="text-base sm:text-lg font-extrabold text-[#00E575]">
               {formatPKR(lowestPrice)}
               <span className="text-xs text-gray-400 font-normal"> / hr</span>
             </span>
@@ -133,10 +133,10 @@ export default function GroundCard({ venue, onSelectVenue, userDistanceKm }: Gro
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => onSelectVenue(venue)}
-              className="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-dark-elevated text-white hover:bg-neon-green hover:text-[#070A0F] border border-dark-border hover:border-neon-green transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
+              className="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#14231B] text-white hover:bg-[#00E575] hover:text-[#090D10] border border-[#1E3527] hover:border-[#00E575] transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
             >
-              <Calendar className="w-4 h-4 text-neon-green group-hover:text-current" />
-              Book Slot
+              <Calendar className="w-4 h-4 text-[#00E575] group-hover:text-current" />
+              Book Pitch
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>

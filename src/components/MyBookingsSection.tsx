@@ -113,37 +113,35 @@ export default function MyBookingsSection() {
   return (
     <section id="my-bookings" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 pt-4">
       {/* Header and Lookup Search Bar */}
-      <div className="bg-dark-card border border-dark-border rounded-2xl p-5 sm:p-6 shadow-xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-neon-green/5 blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-dark-border pb-5">
+      <div className="bg-[#0A130F] border border-[#17261E] rounded-2xl p-5 sm:p-6 shadow-xl relative overflow-hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#17261E] pb-5">
           <div>
-            <div className="flex items-center gap-2 text-neon-green text-xs font-bold uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-[#00E575] text-xs font-bold">
               <Calendar className="w-4 h-4" />
-              Live Booking Hub & Match Passes
+              <span>Matchday Passes & Active Slots</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-extrabold text-white font-display mt-0.5">
-              Your Booked Slots & Match Passes
+              Your Booked Slots & Passes
             </h2>
             <p className="text-xs text-gray-400 mt-1 max-w-xl">
-              Track your booked match slots, access your 4-digit caretaker check-in PIN, view cash due, and share squad payment bills to WhatsApp.
+              Instant access to your 4-digit caretaker check-in PIN, match timings, remaining cash balance, and WhatsApp Squad Pay bill generator.
             </p>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={fetchBookings}
-              className="px-3 py-2 rounded-xl bg-dark-elevated hover:bg-dark-border text-gray-300 hover:text-white text-xs font-bold flex items-center gap-1.5 transition-all"
+              className="px-3 py-2 rounded-xl bg-[#0F1D16] hover:bg-[#14291F] text-gray-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-all border border-[#1E3527]"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
-              Sync Bookings
+              Sync Passes
             </button>
             <Link
               href="/caretaker"
-              className="px-3.5 py-2 rounded-xl bg-neon-cyan/10 border border-neon-cyan/40 text-neon-cyan hover:bg-neon-cyan hover:text-dark text-xs font-bold flex items-center gap-1.5 transition-all"
+              className="px-3.5 py-2 rounded-xl bg-[#12231A] border border-[#1E3A2B] text-[#00E575] hover:bg-[#00E575] hover:text-[#090D10] text-xs font-bold flex items-center gap-1.5 transition-all"
             >
               <ShieldCheck className="w-3.5 h-3.5" />
-              Field Caretaker PIN Screen
+              Field PIN Screen
             </Link>
           </div>
         </div>
@@ -157,7 +155,7 @@ export default function MyBookingsSection() {
               placeholder="Find booking by WhatsApp phone (e.g. 0324...) or 4-digit PIN..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-xl bg-dark border border-dark-border text-white text-xs placeholder-gray-500 focus:outline-none focus:border-neon-green"
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#070D0A] border border-[#17261E] text-white text-xs placeholder-gray-500 focus:outline-none focus:border-[#00E575]"
             />
           </div>
           {searchQuery && (
@@ -165,11 +163,11 @@ export default function MyBookingsSection() {
               onClick={() => setSearchQuery("")}
               className="text-xs text-gray-400 hover:text-white px-2 py-1"
             >
-              Clear Search
+              Clear
             </button>
           )}
           <div className="text-[11px] text-gray-400 shrink-0">
-            Total Active Bookings: <strong className="text-white font-mono">{filteredBookings.length}</strong>
+            Active Passes: <strong className="text-white font-mono">{filteredBookings.length}</strong>
           </div>
         </div>
       </div>
@@ -184,12 +182,12 @@ export default function MyBookingsSection() {
             return (
               <div
                 key={b.id}
-                className="bg-dark-card border border-dark-border hover:border-neon-green/60 rounded-2xl p-5 space-y-4 shadow-lg transition-all flex flex-col justify-between relative overflow-hidden group"
+                className="bg-[#0C1611] border border-[#17261E] hover:border-[#00E575]/50 rounded-2xl p-5 space-y-4 shadow-lg transition-all flex flex-col justify-between relative overflow-hidden group"
               >
-                {/* Status Glow Bar */}
+                {/* Status Indicator */}
                 <div
                   className={`absolute top-0 left-0 right-0 h-1 ${
-                    isCheckedIn ? "bg-neon-green" : "bg-neon-cyan"
+                    isCheckedIn ? "bg-[#00E575]" : "bg-amber-400"
                   }`}
                 />
 
@@ -197,22 +195,22 @@ export default function MyBookingsSection() {
                   {/* Top Bar: Status & Booking ID */}
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-mono text-gray-400">
-                      #{b.id}
+                      PASS #{b.id}
                     </span>
                     <span
-                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold flex items-center gap-1 ${
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold flex items-center gap-1 ${
                         isCheckedIn
-                          ? "bg-neon-green/20 text-neon-green border border-neon-green/40"
-                          : "bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/40"
+                          ? "bg-[#00E575]/20 text-[#00E575] border border-[#00E575]/40"
+                          : "bg-amber-500/20 text-amber-300 border border-amber-500/40"
                       }`}
                     >
                       {isCheckedIn ? (
                         <>
-                          <CheckCircle2 className="w-3 h-3" /> PITCH UNLOCKED
+                          <CheckCircle2 className="w-3 h-3" /> PITCH ACCESS UNLOCKED
                         </>
                       ) : (
                         <>
-                          <Clock className="w-3 h-3" /> SLOT LOCKED
+                          <Clock className="w-3 h-3" /> SLOT CONFIRMED
                         </>
                       )}
                     </span>
@@ -220,37 +218,37 @@ export default function MyBookingsSection() {
 
                   {/* Pitch and Venue */}
                   <div>
-                    <h3 className="text-base font-bold text-white font-display group-hover:text-neon-green transition-colors">
+                    <h3 className="text-base font-bold text-white font-display group-hover:text-[#00E575] transition-colors">
                       {b.pitchName}
                     </h3>
                     <p className="text-xs text-gray-300 flex items-center gap-1 mt-0.5">
-                      <MapPin className="w-3.5 h-3.5 text-neon-green shrink-0" />
+                      <MapPin className="w-3.5 h-3.5 text-[#00E575] shrink-0" />
                       <span>{b.venueName || "Kamil FC Mega Sports Complex"}</span>
                     </p>
                   </div>
 
                   {/* Timing Pill */}
-                  <div className="bg-dark-elevated p-2.5 rounded-xl border border-dark-border flex items-center justify-between text-xs">
+                  <div className="bg-[#08100C] p-2.5 rounded-xl border border-[#17261E] flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2 text-white">
-                      <Calendar className="w-4 h-4 text-neon-cyan" />
+                      <Calendar className="w-4 h-4 text-gray-400" />
                       <span>{b.slotDate}</span>
                     </div>
-                    <div className="flex items-center gap-1.5 font-bold text-neon-green">
+                    <div className="flex items-center gap-1.5 font-bold text-[#00E575]">
                       <Clock className="w-3.5 h-3.5" />
                       <span>{b.slotTime}</span>
                     </div>
                   </div>
 
-                  {/* Big PIN Code Box */}
-                  <div className="bg-dark p-3.5 rounded-xl border border-neon-green/40 text-center space-y-1">
-                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
-                      Ground Check-In PIN
+                  {/* High Contrast Scoreboard PIN Box */}
+                  <div className="bg-[#070D0A] p-3.5 rounded-xl border border-[#1E3A2B] text-center space-y-1">
+                    <span className="text-[10px] font-mono font-bold text-gray-400 uppercase tracking-wider">
+                      Caretaker Check-In PIN
                     </span>
-                    <div className="text-2xl sm:text-3xl font-mono font-extrabold tracking-widest text-neon-green">
+                    <div className="text-3xl font-mono font-black tracking-widest text-[#00E575]">
                       {b.pinCode}
                     </div>
                     <p className="text-[10px] text-gray-400">
-                      Show this 4-digit code to the caretaker at the pitch
+                      Show this 4-digit code to ground attendant at pitch
                     </p>
                   </div>
 
@@ -264,24 +262,24 @@ export default function MyBookingsSection() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">Total Price:</span>
-                      <strong className="text-neon-green">{formatPKR(b.totalAmount)}</strong>
+                      <strong className="text-[#00E575]">{formatPKR(b.totalAmount)}</strong>
                     </div>
                     {b.cashDue > 0 ? (
-                      <div className="flex justify-between text-neon-yellow font-bold">
+                      <div className="flex justify-between text-amber-300 font-bold">
                         <span>Cash Due at Pitch:</span>
                         <span>{formatPKR(b.cashDue)}</span>
                       </div>
                     ) : (
-                      <div className="flex justify-between text-neon-green font-semibold">
+                      <div className="flex justify-between text-[#00E575] font-semibold">
                         <span>Payment:</span>
-                        <span>Full Paid ({b.paymentMethod})</span>
+                        <span>Paid in Full</span>
                       </div>
                     )}
                   </div>
                 </div>
 
                 {/* Card Action Buttons */}
-                <div className="pt-3 border-t border-dark-border space-y-2">
+                <div className="pt-3 border-t border-[#17261E] space-y-2">
                   <div className="grid grid-cols-2 gap-2">
                     {/* Share WhatsApp Squad Bill */}
                     <a
@@ -297,7 +295,7 @@ export default function MyBookingsSection() {
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="py-2 px-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600 hover:text-dark text-emerald-400 border border-emerald-500/40 text-[11px] font-bold flex items-center justify-center gap-1 transition-all"
+                      className="py-2 px-2 rounded-xl bg-[#12231A] hover:bg-[#00E575] hover:text-[#090D10] text-[#00E575] border border-[#1E3A2B] text-[11px] font-bold flex items-center justify-center gap-1 transition-all"
                     >
                       <Share2 className="w-3.5 h-3.5" />
                       <span>Squad Share</span>
@@ -307,9 +305,9 @@ export default function MyBookingsSection() {
                     <button
                       onClick={() => handleSendReminder(b)}
                       disabled={!!reminderTxt}
-                      className="py-2 px-2 rounded-xl bg-dark-elevated hover:bg-dark-border text-white text-[11px] font-bold border border-dark-border flex items-center justify-center gap-1 transition-all"
+                      className="py-2 px-2 rounded-xl bg-[#0F1D16] hover:bg-[#152B1F] text-white text-[11px] font-semibold border border-[#17261E] flex items-center justify-center gap-1 transition-all"
                     >
-                      <Bell className="w-3.5 h-3.5 text-neon-yellow" />
+                      <Bell className="w-3.5 h-3.5 text-amber-400" />
                       <span>{reminderTxt || "Send Alert"}</span>
                     </button>
                   </div>
@@ -317,10 +315,10 @@ export default function MyBookingsSection() {
                   {/* Verify PIN Direct Quick Test */}
                   <Link
                     href={`/caretaker`}
-                    className="w-full py-2 rounded-xl bg-dark border border-dark-border hover:border-neon-cyan text-gray-300 hover:text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
+                    className="w-full py-2 rounded-xl bg-[#08100C] border border-[#17261E] hover:border-[#00E575]/40 text-gray-300 hover:text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
                   >
-                    <ShieldCheck className="w-3.5 h-3.5 text-neon-cyan" />
-                    <span>Verify at Field Caretaker Portal</span>
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#00E575]" />
+                    <span>Open Field Caretaker PIN Keypad</span>
                     <ChevronRight className="w-3 h-3" />
                   </Link>
                 </div>
@@ -329,17 +327,17 @@ export default function MyBookingsSection() {
           })}
         </div>
       ) : (
-        <div className="bg-dark-card border border-dark-border rounded-2xl p-8 sm:p-12 text-center space-y-3">
+        <div className="bg-[#0A130F] border border-[#17261E] rounded-2xl p-8 sm:p-12 text-center space-y-3">
           <Calendar className="w-10 h-10 text-gray-500 mx-auto" />
           <h3 className="text-base font-bold text-white">No Booked Slots Found</h3>
           <p className="text-xs text-gray-400 max-w-sm mx-auto">
             {searchQuery
               ? `No booking matching "${searchQuery}". Please check the phone number or 4-digit PIN.`
-              : "You haven't booked any slots yet. Choose a venue below to lock in your match play!"}
+              : "No matches booked yet. Explore available grounds below to lock your floodlit slot."}
           </p>
           <a
             href="#venues"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-neon-green text-dark text-xs font-extrabold glow-neon-green mt-2"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#00E575] text-[#090D10] text-xs font-extrabold mt-2 transition-all shadow-md active:scale-95"
           >
             Explore Arenas & Book a Slot
           </a>

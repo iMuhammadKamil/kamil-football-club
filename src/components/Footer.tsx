@@ -4,25 +4,24 @@ import { Shield, Sparkles, MapPin, Phone, MessageSquare } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-[#1E2C44] bg-[#05070A] text-gray-400 py-12 px-4 sm:px-6 lg:px-8">
+    <footer className="border-t border-[#17261E] bg-[#070D0A] text-gray-400 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Brand */}
         <div className="space-y-4 md:col-span-1">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-neon-green flex items-center justify-center font-extrabold text-[#070A0F]">
+            <div className="w-8 h-8 rounded-lg bg-[#12231A] border border-[#1E3A2B] flex items-center justify-center font-black text-[#00E575] text-xs">
               KFC
             </div>
             <span className="font-display font-extrabold text-white text-lg tracking-wider">
-              KAMIL <span className="text-neon-green">FC</span>
+              KAMIL <span className="text-[#00E575]">FC</span>
             </span>
           </div>
           <p className="text-xs text-gray-400 leading-relaxed">
-            Pakistan&apos;s Next-Gen Multi-Sport & Ground Management Platform. 
-            Real-time atomic slot locks, Raast QR instant verification, and Squad Pay.
+            Pakistan&apos;s Multi-Sport & Stadium Management Operating System. Built for ground reality: floodlight changeovers, atomic database slot holds, and pitch-side PIN check-in.
           </p>
-          <div className="flex items-center gap-2 text-xs text-neon-green font-semibold">
-            <span className="w-2 h-2 rounded-full bg-neon-green animate-ping" />
-            Live across Karachi, Lahore & Islamabad
+          <div className="flex items-center gap-2 text-xs text-[#00E575] font-semibold">
+            <span className="w-2 h-2 rounded-full bg-[#00E575]" />
+            Operating in Karachi, Lahore & Islamabad
           </div>
         </div>
 

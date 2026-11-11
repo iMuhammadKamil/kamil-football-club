@@ -20,7 +20,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#070A0F",
+  themeColor: "#090D10",
 };
 
 export const metadata: Metadata = {
@@ -44,7 +44,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable} dark`}>
-      <body className="bg-[#070A0F] text-slate-100 min-h-screen flex flex-col font-sans selection:bg-neon-green selection:text-black">
+      <body className="bg-[#090D10] text-slate-100 min-h-screen flex flex-col font-sans selection:bg-[#00E575] selection:text-black">
         <Navbar />
         <div className="flex-1">{children}</div>
         <Footer />

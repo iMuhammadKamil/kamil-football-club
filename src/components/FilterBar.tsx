@@ -67,7 +67,7 @@ export default function FilterBar({
             placeholder="Search venue name, area (e.g. DHA Phase 6, Gulberg, F-7)..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-dark-card border border-dark-border text-white placeholder-gray-500 text-xs sm:text-sm focus:outline-none focus:border-neon-green transition-all"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#0C1611] border border-[#17261E] text-white placeholder-gray-500 text-xs sm:text-sm focus:outline-none focus:border-[#00E575] transition-all"
           />
         </div>
 
@@ -77,8 +77,8 @@ export default function FilterBar({
             onClick={onLocateUser}
             className={`px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all border flex items-center justify-center gap-1.5 shrink-0 ${
               userCoordsLocated
-                ? "bg-neon-cyan/20 border-neon-cyan text-neon-cyan glow-neon-cyan"
-                : "bg-dark-card border-dark-border text-gray-300 hover:border-neon-cyan"
+                ? "bg-[#12231A] border-[#1E3A2B] text-[#00E575]"
+                : "bg-[#0C1611] border-[#17261E] text-gray-300 hover:border-[#1E3A2B]"
             }`}
           >
             <Compass className={`w-4 h-4 ${userCoordsLocated ? "animate-spin" : ""}`} />
@@ -96,8 +96,8 @@ export default function FilterBar({
                 onClick={() => onSelectCity(city.id)}
                 className={`px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border ${
                   active
-                    ? "bg-neon-green text-[#070A0F] border-neon-green glow-neon-green font-bold"
-                    : "bg-dark-card text-gray-300 border-dark-border hover:border-gray-500"
+                    ? "bg-[#00E575] text-[#090D10] border-[#00E575] font-bold"
+                    : "bg-[#0C1611] text-gray-300 border-[#17261E] hover:border-gray-500"
                 }`}
               >
                 {city.label}
@@ -110,7 +110,7 @@ export default function FilterBar({
       {/* Sport Selector Chips */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
         <span className="text-xs text-gray-400 flex items-center gap-1 shrink-0 font-medium mr-1">
-          <Filter className="w-3.5 h-3.5 text-neon-green" />
+          <Filter className="w-3.5 h-3.5 text-[#00E575]" />
           Sport:
         </span>
         {SPORT_OPTIONS.map((sport) => {
@@ -121,13 +121,12 @@ export default function FilterBar({
               onClick={() => onSelectSport(sport.id)}
               className={`px-3 py-1.5 rounded-lg text-xs whitespace-nowrap transition-all border flex items-center gap-1.5 ${
                 active
-                  ? "bg-neon-cyan/20 text-neon-cyan border-neon-cyan font-bold glow-neon-cyan"
+                  ? "bg-[#12231A] text-[#00E575] border-[#1E3A2B] font-bold"
                   : sport.highlight
-                  ? "bg-emerald-950/40 text-emerald-400 border-emerald-500/30 hover:border-emerald-400"
-                  : "bg-dark-card/80 text-gray-400 border-dark-border hover:text-white hover:border-gray-500"
+                  ? "bg-[#0E1A14] text-[#00E575] border-[#1A2E22] hover:border-[#00E575]/40"
+                  : "bg-[#0A130F] text-gray-400 border-[#17261E] hover:text-white hover:border-gray-500"
               }`}
             >
-              {sport.highlight && <Sparkles className="w-3 h-3 text-neon-green" />}
               {sport.label}
             </button>
           );

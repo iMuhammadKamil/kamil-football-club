@@ -17,27 +17,25 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#070A0F]/90 backdrop-blur-md border-b border-[#1E2C44]">
+    <nav className="sticky top-0 z-50 bg-[#090D10]/95 backdrop-blur-md border-b border-[#17261E]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo & Brand */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-neon-green via-neon-cyan to-blue-600 p-[2px] transition-transform group-hover:scale-105">
-              <div className="w-full h-full bg-[#070A0F] rounded-[10px] flex items-center justify-center">
-                <span className="font-display font-extrabold text-neon-green text-lg tracking-wider">KFC</span>
-              </div>
+            <div className="w-10 h-10 rounded-xl bg-[#12231A] border border-[#1E3A2B] flex items-center justify-center transition-transform group-hover:scale-105">
+              <span className="font-display font-black text-[#00E575] text-base tracking-wider">KFC</span>
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-display font-extrabold text-lg sm:text-xl text-white tracking-wide">
-                  KAMIL <span className="text-neon-green">FC</span>
+                  KAMIL <span className="text-[#00E575]">FC</span>
                 </span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-neon-green/10 text-neon-green border border-neon-green/30">
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-[#12231A] text-[#00E575] border border-[#1E3A2B]">
                   PAKISTAN
                 </span>
               </div>
-              <p className="text-[11px] text-dark-muted hidden sm:block">
-                Multi-Sport Arenas & Turfs
+              <p className="text-[11px] text-gray-400 hidden sm:block">
+                Multi-Sport Stadium & Turf System
               </p>
             </div>
           </Link>

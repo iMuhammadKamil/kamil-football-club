@@ -111,86 +111,119 @@ export default function HomePage() {
 
   return (
     <main className="space-y-16 pb-20">
-      {/* 1. HERO SECTION */}
-      <section className="relative overflow-hidden pt-12 pb-16 sm:pt-20 sm:pb-24 border-b border-[#1E2C44]/80">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[350px] bg-neon-green/10 blur-[130px] rounded-full pointer-events-none" />
-        <div className="absolute top-1/3 right-10 w-[350px] h-[300px] bg-neon-cyan/10 blur-[120px] rounded-full pointer-events-none" />
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-neon-green/10 border border-neon-green/30 text-neon-green text-xs font-bold tracking-wide uppercase shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-neon-green animate-ping" />
-            Pakistan&apos;s Multi-Sport & Ground Management System
-          </div>
-
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white font-display tracking-tight max-w-4xl mx-auto leading-tight sm:leading-none">
-            NO MORE PHONE CALLS. <br className="hidden sm:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-green via-neon-cyan to-white">
-              INSTANT LOCK & SQUAD PAY.
-            </span>
-          </h1>
-
-          <p className="text-sm sm:text-base text-gray-300 max-w-2xl mx-auto leading-relaxed">
-            From <strong>11-a-Side full football stadiums</strong> and <strong>7-a-side futsal cages</strong> to 
-            panoramic <strong>Padel tennis</strong> and floodlit <strong>cricket nets</strong> in Karachi, Lahore, and Islamabad. 
-            Real-time atomic slot holds, Raast QR checkout, and 4-digit caretaker check-in PINs.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-            <a
-              href="#venues"
-              className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-neon-green text-dark font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 glow-neon-green shadow-xl hover:bg-neon-green/90 transition-all active:scale-95"
-            >
-              <Calendar className="w-5 h-5" />
-              Book a Pitch Now
-            </a>
-            <a
-              href="#my-bookings"
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-dark-card border border-neon-green/40 hover:border-neon-green text-neon-green font-bold text-sm sm:text-base flex items-center justify-center gap-2 hover:bg-dark-elevated transition-all"
-            >
-              <CheckCircle2 className="w-5 h-5 text-neon-green" />
-              My Booked Slots
-            </a>
-            <Link
-              href="/caretaker"
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-dark-card border border-dark-border hover:border-neon-cyan text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 hover:bg-dark-elevated transition-all"
-            >
-              <ShieldCheck className="w-5 h-5 text-neon-cyan" />
-              Caretaker PIN
-            </Link>
-          </div>
-
-          <div className="pt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-left">
-            <div className="bg-dark-card/70 border border-dark-border p-4 rounded-xl">
-              <div className="flex items-center gap-2 text-neon-green text-xs font-bold uppercase">
-                <Flame className="w-4 h-4" /> 11v11 Ready
+      {/* 1. HERO SECTION: ASYMMETRIC STADIUM FIXTURE & EDITORIAL HEADLINE */}
+      <section className="relative overflow-hidden pt-8 pb-14 sm:pt-14 sm:pb-20 border-b border-[#17261E] stadium-mesh-bg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            
+            {/* Left Column: Direct Matchday Statement & Actions */}
+            <div className="lg:col-span-7 space-y-6 text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#12231A] border border-[#1E3A2B] text-xs font-semibold text-[#00E575]">
+                <span className="w-2 h-2 rounded-full bg-[#00E575] animate-pulse" />
+                <span>32 Floodlit Grounds Active Tonight</span>
               </div>
-              <div className="text-xl font-extrabold text-white mt-1">Full Stadiums</div>
-              <p className="text-[11px] text-gray-400 mt-0.5">FIFA-standard turfs</p>
+
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white font-display tracking-tight leading-[1.1]">
+                The floodlights are on. <br />
+                Lock your pitch in 60 seconds.
+              </h1>
+
+              <p className="text-sm sm:text-base text-gray-300 max-w-xl leading-relaxed">
+                Direct turf booking for full 11-a-side stadiums, 7-a-side futsal cages, glass padel courts, and floodlit tape-ball nets in Karachi, Lahore, and Islamabad. No WhatsApp delays, no double-bookings.
+              </p>
+
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <a
+                  href="#venues"
+                  className="px-6 py-3 rounded-xl bg-[#00E575] hover:bg-[#00c966] text-[#090D10] font-extrabold text-sm transition-all shadow-lg active:scale-95 flex items-center gap-2"
+                >
+                  <Calendar className="w-4 h-4" />
+                  <span>Browse Available Pitches</span>
+                </a>
+                <a
+                  href="#my-bookings"
+                  className="px-5 py-3 rounded-xl bg-[#0C1611] hover:bg-[#12231A] text-white border border-[#1E3A2B] font-semibold text-sm transition-all flex items-center gap-2"
+                >
+                  <CheckCircle2 className="w-4 h-4 text-[#00E575]" />
+                  <span>My Match Passes</span>
+                </a>
+                <Link
+                  href="/caretaker"
+                  className="px-4 py-3 rounded-xl bg-[#0C1611] hover:bg-[#12231A] text-gray-300 hover:text-white border border-[#1E2C22] text-xs font-medium transition-all flex items-center gap-1.5"
+                >
+                  <ShieldCheck className="w-4 h-4 text-neon-cyan" />
+                  <span>Caretaker Gate PIN</span>
+                </Link>
+              </div>
+
+              {/* Direct Ground Specifications Preview */}
+              <div className="pt-4 border-t border-[#17261E] grid grid-cols-3 gap-4 text-xs">
+                <div>
+                  <span className="text-gray-400 block text-[11px]">Stadium Standards</span>
+                  <strong className="text-white font-semibold">FIFA Quality Turfs</strong>
+                </div>
+                <div>
+                  <span className="text-gray-400 block text-[11px]">Settlement</span>
+                  <strong className="text-white font-semibold">State Bank Raast QR</strong>
+                </div>
+                <div>
+                  <span className="text-gray-400 block text-[11px]">Anti-Theft Lock</span>
+                  <strong className="text-[#00E575] font-semibold">10-Minute Hold</strong>
+                </div>
+              </div>
             </div>
 
-            <div className="bg-dark-card/70 border border-dark-border p-4 rounded-xl">
-              <div className="flex items-center gap-2 text-neon-yellow text-xs font-bold uppercase">
-                <Activity className="w-4 h-4" /> Padel & Net
+            {/* Right Column: Live Pitch Telemetry & Stadium Board */}
+            <div className="lg:col-span-5">
+              <div className="bg-[#0A130F] border border-[#1C2E24] rounded-2xl p-5 shadow-2xl space-y-4">
+                <div className="flex items-center justify-between border-b border-[#17261E] pb-3">
+                  <div className="flex items-center gap-2 text-xs font-bold text-white">
+                    <Activity className="w-4 h-4 text-[#00E575]" />
+                    <span>Tonight&apos;s Matchday Status</span>
+                  </div>
+                  <span className="text-[11px] text-gray-400">Live Telemetry</span>
+                </div>
+
+                {/* Live Stadium List */}
+                <div className="space-y-2.5">
+                  <div className="p-3 rounded-xl bg-[#0F1D16] border border-[#1B2F23] flex items-center justify-between text-xs">
+                    <div>
+                      <div className="font-bold text-white">Kamil FC Complex (11v11)</div>
+                      <div className="text-[11px] text-gray-400">DHA Phase 6, Karachi • 500-Lux Lights</div>
+                    </div>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#00E575]/20 text-[#00E575] border border-[#00E575]/40">
+                      Open 21:00
+                    </span>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-[#0F1D16] border border-[#1B2F23] flex items-center justify-between text-xs">
+                    <div>
+                      <div className="font-bold text-white">Legends Sports Arena (Gulberg)</div>
+                      <div className="text-[11px] text-gray-400">Gulberg III, Lahore • Tapeball Cage 1</div>
+                    </div>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#00E575]/20 text-[#00E575] border border-[#00E575]/40">
+                      Open 20:00
+                    </span>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-[#0F1D16] border border-[#1B2F23] flex items-center justify-between text-xs">
+                    <div>
+                      <div className="font-bold text-white">Capital Padel Club (WPT Spec)</div>
+                      <div className="text-[11px] text-gray-400">Sector F-7, Islamabad • Glass Court</div>
+                    </div>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                      1 Slot Left
+                    </span>
+                  </div>
+                </div>
+
+                <div className="bg-[#070D0A] p-3 rounded-xl border border-[#17261E] flex items-center justify-between text-xs text-gray-300">
+                  <span className="text-[11px]">Match buffer policy:</span>
+                  <strong className="text-white">50m Play + 10m Changeover</strong>
+                </div>
               </div>
-              <div className="text-xl font-extrabold text-white mt-1">Glass Courts</div>
-              <p className="text-[11px] text-gray-400 mt-0.5">WPT spec panoramic</p>
             </div>
 
-            <div className="bg-dark-card/70 border border-dark-border p-4 rounded-xl">
-              <div className="flex items-center gap-2 text-neon-cyan text-xs font-bold uppercase">
-                <QrCode className="w-4 h-4" /> Zero Fees
-              </div>
-              <div className="text-xl font-extrabold text-white mt-1">Raast Instant</div>
-              <p className="text-[11px] text-gray-400 mt-0.5">Direct State Bank QR</p>
-            </div>
-
-            <div className="bg-dark-card/70 border border-dark-border p-4 rounded-xl">
-              <div className="flex items-center gap-2 text-neon-purple text-xs font-bold uppercase">
-                <Users className="w-4 h-4" /> Squad Pay
-              </div>
-              <div className="text-xl font-extrabold text-white mt-1">Split the Bill</div>
-              <p className="text-[11px] text-gray-400 mt-0.5">1-tap WhatsApp shares</p>
-            </div>
           </div>
         </div>
       </section>
@@ -286,46 +319,46 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* 4. CORE LOCAL PROBLEMS SOLVED */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-dark-card border border-dark-border rounded-3xl p-6 sm:p-10 space-y-8">
-          <div className="text-center max-w-2xl mx-auto space-y-2">
-            <span className="text-xs font-bold text-neon-cyan uppercase tracking-wider">
-              Engineered for Ground Realities in Pakistan
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-display">
-              Why Kamil Football Club Replaces WhatsApp Diaries
+      {/* 4. GROUND PROTOCOL & CAPTAIN'S MATCHDAY FLOW */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="bg-[#0A130F] border border-[#17261E] rounded-3xl p-6 sm:p-10 space-y-8">
+          <div className="max-w-xl text-left space-y-2">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-display tracking-tight">
+              Built for Ground Realities in Pakistan
             </h2>
+            <p className="text-xs sm:text-sm text-gray-400 leading-relaxed">
+              Replacing lost WhatsApp diary entries, double-booked turf clashes, and midnight cash arguments under floodlights.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-dark-elevated p-6 rounded-2xl border border-dark-border space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-neon-green/20 text-neon-green flex items-center justify-center font-bold">
-                1
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="bg-[#0D1914] border border-[#1C2F24] p-6 rounded-2xl space-y-3 relative overflow-hidden">
+              <div className="text-[11px] font-mono font-bold text-[#00E575]">
+                PHASE 01 • DATABASE LOCK
               </div>
-              <h3 className="text-base font-bold text-white">Double-Booking Prevention</h3>
+              <h3 className="text-base font-bold text-white">10-Minute Atomic Slot Hold</h3>
               <p className="text-xs text-gray-400 leading-relaxed">
-                When a captain selects 9:00 PM - 10:00 PM, an atomic 10-minute hold lock prevents any other player from snitching the slot while you complete your deposit.
+                When you tap a slot, an atomic database lock freezes it for 10 minutes. No competing team can hijack your ground while you confirm attendance with your squad.
               </p>
             </div>
 
-            <div className="bg-dark-elevated p-6 rounded-2xl border border-dark-border space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-neon-cyan/20 text-neon-cyan flex items-center justify-center font-bold">
-                2
+            <div className="bg-[#0D1914] border border-[#1C2F24] p-6 rounded-2xl space-y-3 relative overflow-hidden">
+              <div className="text-[11px] font-mono font-bold text-[#00E575]">
+                PHASE 02 • SQUAD SETTLEMENT
               </div>
-              <h3 className="text-base font-bold text-white">Squad Pay (Split Bill)</h3>
+              <h3 className="text-base font-bold text-white">Squad Pay with State Bank Raast</h3>
               <p className="text-xs text-gray-400 leading-relaxed">
-                No more awkward 1:00 AM cash hunting under floodlights. The app calculates per-player shares and crafts a formatted WhatsApp payment card with your Raast IBAN.
+                Auto-generates exact per-player shares with your Raast IBAN. Share to your squad group with 1 tap so teammates transfer their share directly to you before kickoff.
               </p>
             </div>
 
-            <div className="bg-dark-elevated p-6 rounded-2xl border border-dark-border space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-neon-yellow/20 text-neon-yellow flex items-center justify-center font-bold">
-                3
+            <div className="bg-[#0D1914] border border-[#1C2F24] p-6 rounded-2xl space-y-3 relative overflow-hidden">
+              <div className="text-[11px] font-mono font-bold text-[#00E575]">
+                PHASE 03 • PITCH GATE PASS
               </div>
-              <h3 className="text-base font-bold text-white">Caretaker 4-Digit PIN Check-In</h3>
+              <h3 className="text-base font-bold text-white">4-Digit Caretaker Check-In PIN</h3>
               <p className="text-xs text-gray-400 leading-relaxed">
-                Field caretakers use an ultra-fast high-contrast mobile screen. Players simply recite their 4-digit numeric code to unlock pitch floodlights and verify remaining cash dues.
+                Recite your numeric pass to the ground attendant under floodlights. The attendant verifies turf studs, reconciles remaining cash dues, and unlocks pitch access.
               </p>
             </div>
           </div>
