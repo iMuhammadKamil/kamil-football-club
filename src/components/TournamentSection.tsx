@@ -19,45 +19,45 @@ interface TournamentItem {
   format: string;
 }
 
-const TOURNAMENTS: TournamentItem[] = [
+export const TOURNAMENTS: TournamentItem[] = [
   {
     id: "tourney-khi-11",
-    title: "Karachi Champions Cup (11-a-Side)",
+    title: "Karachi United Floodlit Cup (11-a-Side)",
     sport: "11-a-Side Football",
     city: "Karachi",
-    venueName: "Kamil FC Mega Sports Complex, DHA 6",
+    venueName: "Karachi United Football Stadium, Clifton Scheme 5",
     startDate: "Nov 20 - 24, 2026",
     entryFee: 15000,
     prizePool: 300000,
     teamsCount: "16 Teams Knockout",
-    featuredImg: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=800&q=80",
-    format: "FIFA Rules • 90 Mins • Professional Referees",
+    featuredImg: "/images/grounds/football-11.jpg",
+    format: "FIFA Rules • 90 Mins • PFF Referees",
   },
   {
     id: "tourney-padel-isb",
-    title: "Capital Padel Masters (Category B & Open)",
+    title: "Islamabad Open Padel Series (Gulberg Greens)",
     sport: "Padel Tennis",
     city: "Islamabad",
-    venueName: "Capital Padel & Badminton Club, F-7",
+    venueName: "Padel Zone, Block B, Gulberg Greens",
     startDate: "Dec 02 - 04, 2026",
     entryFee: 8000,
     prizePool: 150000,
     teamsCount: "32 Pairs Double-Elimination",
-    featuredImg: "https://images.unsplash.com/photo-1626248801379-51a0748a5f96?auto=format&fit=crop&w=800&q=80",
-    format: "WPT Scoring • Dunlop Balls Provided",
+    featuredImg: "/images/grounds/padel.jpg",
+    format: "WPT Scoring • Floodlit Panoramic Courts",
   },
   {
     id: "tourney-tapeball-lhr",
-    title: "Lahore Midnight Tapeball Super League",
-    sport: "Tapeball Cricket",
+    title: "Lahore All-City Badminton & Table Tennis Open",
+    sport: "Table Tennis & Badminton",
     city: "Lahore",
-    venueName: "Legends Sports Arena, Gulberg",
+    venueName: "Nishtar Park Sports Complex (Punjab Stadium), Ferozepur Rd",
     startDate: "Nov 28 - 29, 2026",
-    entryFee: 6000,
+    entryFee: 3500,
     prizePool: 120000,
-    teamsCount: "24 Teams Group + Knockout",
-    featuredImg: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=800&q=80",
-    format: "6 Overs • Floodlight Matches • Speed Radar",
+    teamsCount: "32 Singles & Doubles Draw",
+    featuredImg: "/images/grounds/table-tennis.jpg",
+    format: "ITTF 11-Point Sets • SBP Indoor Hall",
   },
 ];
 
@@ -70,18 +70,21 @@ export default function TournamentSection() {
   const [captainName, setCaptainName] = useState("");
   const [captainPhone, setCaptainPhone] = useState("");
   const [regSuccess, setRegSuccess] = useState(false);
+  const [regError, setRegError] = useState<string | null>(null);
 
   const handleOpenRegistration = (t: TournamentItem) => {
     setActiveTourneyForReg(t);
     setRegSuccess(false);
+    setRegError(null);
   };
 
   const handleConfirmRegistration = (e: React.FormEvent) => {
     e.preventDefault();
     if (!teamName.trim() || !captainName.trim() || !captainPhone.trim()) {
-      alert("Please fill out all team credentials.");
+      setRegError("Please fill out all team credentials.");
       return;
     }
+    setRegError(null);
     if (activeTourneyForReg) {
       setRegisteredSquads({ ...registeredSquads, [activeTourneyForReg.id]: true });
       setRegSuccess(true);
@@ -127,10 +130,10 @@ export default function TournamentSection() {
                     alt={t.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=80";
+                      (e.target as HTMLImageElement).src = "/images/grounds/football-11.jpg";
                     }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0D131F] via-[#0D131F]/30 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0C1611] via-[#0C1611]/30 to-transparent" />
                   
                   {/* Sport Pill */}
                   <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase bg-dark/80 backdrop-blur-md text-neon-yellow border border-neon-yellow/40">
@@ -210,7 +213,7 @@ export default function TournamentSection() {
       {/* SQUAD REGISTRATION MODAL */}
       {activeTourneyForReg && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="bg-[#0D131F] border border-dark-border rounded-2xl p-6 w-full max-w-md space-y-5 shadow-2xl relative">
+          <div className="bg-[#0C1611] border border-[#17261E] rounded-2xl p-6 w-full max-w-md space-y-5 shadow-2xl relative">
             <button
               onClick={() => setActiveTourneyForReg(null)}
               className="absolute top-4 right-4 p-1.5 rounded-lg bg-dark-elevated text-gray-400 hover:text-white"
@@ -286,6 +289,12 @@ export default function TournamentSection() {
                     <span>Raast Transfer / Cash at Ground</span>
                   </div>
                 </div>
+
+                {regError && (
+                  <p className="text-xs text-[#FF7A4D] bg-[#E94A10]/15 border border-[#E94A10]/30 px-3 py-2 rounded-lg">
+                    {regError}
+                  </p>
+                )}
 
                 <button
                   type="submit"

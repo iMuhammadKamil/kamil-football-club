@@ -44,7 +44,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable} dark`}>
-      <body className="bg-[#090D10] text-slate-100 min-h-screen flex flex-col font-sans selection:bg-[#00E575] selection:text-black">
+      <body className="bg-[#090D10] text-slate-100 min-h-screen flex flex-col font-sans selection:bg-[#00C2A1] selection:text-[#090D10] pb-16 md:pb-0">
         <Navbar />
         <div className="flex-1">{children}</div>
         <Footer />

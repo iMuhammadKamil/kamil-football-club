@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// In-memory atomic lock store for high-throughput concurrency
+// Global singleton lock store so HMR in dev does not wipe active 10-min slot holds
 interface LockEntry {
   slotId: string;
   lockedByPhone: string;
@@ -9,7 +9,33 @@ interface LockEntry {
   transactionRef?: string;
 }
 
-const memoryLockTable = new Map<string, LockEntry>();
+const globalForLocks = globalThis as unknown as {
+  kfcSlotLocks: Map<string, LockEntry> | undefined;
+};
+
+const memoryLockTable: Map<string, LockEntry> =
+  globalForLocks.kfcSlotLocks ?? new Map<string, LockEntry>();
+
+if (process.env.NODE_ENV !== "production") {
+  globalForLocks.kfcSlotLocks = memoryLockTable;
+}
+
+function pruneExpiredLocks() {
+  const now = Date.now();
+  memoryLockTable.forEach((entry, key) => {
+    if (entry.holdExpiresAt <= now) {
+      memoryLockTable.delete(key);
+    }
+  });
+}
+
+export async function GET() {
+  pruneExpiredLocks();
+  return NextResponse.json({
+    success: true,
+    locks: Array.from(memoryLockTable.values()),
+  });
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -20,6 +46,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing slotId" }, { status: 400 });
     }
 
+    pruneExpiredLocks();
     const now = Date.now();
     const existing = memoryLockTable.get(slotId);
 
@@ -41,7 +68,7 @@ export async function POST(req: NextRequest) {
       const updatedEntry: LockEntry = {
         ...existing,
         status: "AWAITING_VERIFICATION",
-        holdExpiresAt: now + 30 * 60 * 1000, // 30 mins grace period
+        holdExpiresAt: now + 30 * 60 * 1000,
         transactionRef: transactionRef || "PENDING_MANUAL_CHECK",
       };
       memoryLockTable.set(slotId, updatedEntry);
@@ -55,7 +82,7 @@ export async function POST(req: NextRequest) {
     }
 
     // ACTION: ATOMIC HOLD LOCK (10 mins)
-    if (existing && existing.holdExpiresAt > now && existing.lockedByPhone !== phone) {
+    if (existing && existing.holdExpiresAt > now && existing.lockedByPhone !== (phone || "ANONYMOUS")) {
       const secondsLeft = Math.ceil((existing.holdExpiresAt - now) / 1000);
       return NextResponse.json(
         {
@@ -66,7 +93,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Acquire or refresh 10-minute lock
     const holdExpiresAt = now + 10 * 60 * 1000;
     const newEntry: LockEntry = {
       slotId,
@@ -86,4 +112,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message || "Failed to process slot lock" }, { status: 500 });
   }
 }
-

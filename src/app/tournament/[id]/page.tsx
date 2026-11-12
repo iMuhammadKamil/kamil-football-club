@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { 
@@ -8,16 +8,14 @@ import {
   ShieldCheck, 
   Share2, 
   ArrowLeft, 
-  Calendar, 
   MapPin, 
-  CheckCircle2, 
   Flame,
   Award,
   MessageCircle,
-  ExternalLink
 } from "lucide-react";
 import { generateRandomBracket } from "@/lib/tournamentEngine";
 import { formatPKR } from "@/lib/utils";
+import { TOURNAMENTS } from "@/components/TournamentSection";
 
 const DEFAULT_TEAMS = [
   "Karachi Strikers",
@@ -41,25 +39,60 @@ const DEFAULT_TEAMS = [
 export default function TournamentDetailPage() {
   const params = useParams();
   const id = (params?.id as string) || "tourney-khi-11";
+  const tournamentMeta = TOURNAMENTS.find((t) => t.id === id) || TOURNAMENTS[0];
 
-  const [bracket] = useState(() =>
+  const [bracket, setBracket] = useState(() =>
     generateRandomBracket(
       id,
-      "Karachi Champions Cup (11-a-Side)",
+      tournamentMeta.title,
       DEFAULT_TEAMS
     )
   );
 
+  useEffect(() => {
+    fetch("/api/tournament/score?matchId=QF-M1")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.score) {
+          setBracket((prev) => ({
+            ...prev,
+            matches: prev.matches.map((m) =>
+              m.id === "QF-M1"
+                ? {
+                    ...m,
+                    team1: {
+                      ...m.team1,
+                      score: data.score.scoreA,
+                      isWinner: data.score.status === "COMPLETED" && data.score.scoreA > data.score.scoreB,
+                    },
+                    team2: {
+                      ...m.team2,
+                      score: data.score.scoreB,
+                      isWinner: data.score.status === "COMPLETED" && data.score.scoreB > data.score.scoreA,
+                    },
+                  }
+                : m
+            ),
+          }));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const [copiedLink, setCopiedLink] = useState(false);
 
   const copyShareLink = () => {
-    navigator.clipboard.writeText(window.location.href);
+    try {
+      navigator.clipboard?.writeText(window.location.href);
+    } catch {
+      // ignore clipboard restrictions
+    }
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2500);
   };
 
   return (
-    <main className="min-h-screen bg-[#070A0F] py-8 sm:py-12">
+    <main className="min-h-screen bg-[#090D10] py-8 sm:py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         {/* Breadcrumb Navigation */}
         <div className="flex items-center justify-between text-xs text-gray-400">
@@ -69,7 +102,7 @@ export default function TournamentDetailPage() {
           </Link>
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-0.5 rounded-full bg-neon-yellow/10 border border-neon-yellow/30 text-neon-yellow font-bold text-[10px]">
-              16-Team Knockout Tree
+              {tournamentMeta.teamsCount}
             </span>
           </div>
         </div>
@@ -88,7 +121,7 @@ export default function TournamentDetailPage() {
               </h1>
               <p className="text-xs sm:text-sm text-gray-300 flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-neon-yellow shrink-0" />
-                Main Stadium (11-a-Side) • Kamil FC Mega Sports Complex, DHA Phase 6
+                {tournamentMeta.sport} • {tournamentMeta.venueName}
               </p>
 
               {/* Public Fair-Play Cryptographic Seal */}
@@ -108,7 +141,7 @@ export default function TournamentDetailPage() {
               <a
                 href={`https://wa.me/?text=${encodeURIComponent(
                   `🏆 *Official Knockout Draw Released: ${bracket.title}*\n` +
-                  `🏟️ Venue: Kamil FC Arena (11-a-Side)\n` +
+                  `🏟️ Venue: ${tournamentMeta.venueName} (${tournamentMeta.sport})\n` +
                   `🔒 Verification Seed: ${bracket.verificationSeedHash}\n` +
                   `👀 View Live Bracket: ${typeof window !== "undefined" ? window.location.href : "https://kamilfc.pk/bracket"}`
                 )}`}
@@ -204,7 +237,7 @@ export default function TournamentDetailPage() {
             {/* Semi Finals & Grand Final */}
             <div className="space-y-3">
               <div className="bg-dark-card border border-dark-border py-2 px-3 rounded-xl text-xs font-bold text-neon-green uppercase tracking-wider text-center">
-                Grand Final (Prize: Rs. 300,000)
+                Grand Final (Prize: {formatPKR(tournamentMeta.prizePool)})
               </div>
               <div className="space-y-3">
                 {bracket.matches.filter((m) => m.round === "FINAL").map((m) => (
@@ -213,11 +246,11 @@ export default function TournamentDetailPage() {
                       <span className="flex items-center gap-1">
                         <Award className="w-4 h-4" /> Championship Final
                       </span>
-                      <span>Nov 24, 21:30</span>
+                      <span>{tournamentMeta.startDate}</span>
                     </div>
                     <div className="bg-dark p-3 rounded-xl border border-dark-border space-y-2 text-xs">
                       <div className="flex justify-between text-white font-bold">
-                        <span>Karachi Strikers</span>
+                        <span>{bracket.matches[0]?.team1?.name || "Winner Semi-Final 1"}</span>
                         <span className="text-neon-yellow">Finalist 1</span>
                       </div>
                       <div className="flex justify-between text-gray-400">

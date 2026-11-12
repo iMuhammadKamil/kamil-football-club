@@ -10,16 +10,28 @@ interface MatchScore {
   updatedAt: string;
 }
 
-const liveScores = new Map<string, MatchScore>();
+const globalForScores = globalThis as unknown as {
+  kfcLiveScores: Map<string, MatchScore> | undefined;
+};
 
-// Seed default live match
-liveScores.set("QF-M1", {
-  matchId: "QF-M1",
-  scoreA: 2,
-  scoreB: 1,
-  status: "LIVE",
-  updatedAt: new Date().toISOString(),
-});
+const liveScores: Map<string, MatchScore> =
+  globalForScores.kfcLiveScores ??
+  new Map<string, MatchScore>([
+    [
+      "QF-M1",
+      {
+        matchId: "QF-M1",
+        scoreA: 2,
+        scoreB: 1,
+        status: "LIVE",
+        updatedAt: new Date().toISOString(),
+      },
+    ],
+  ]);
+
+if (process.env.NODE_ENV !== "production") {
+  globalForScores.kfcLiveScores = liveScores;
+}
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);

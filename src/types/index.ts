@@ -6,6 +6,7 @@ export type SportType =
   | "CRICKET_HARDBALL"
   | "CRICKET_TAPEBALL"
   | "BADMINTON"
+  | "TABLE_TENNIS"
   | "RUNNING_TRACK";
 
 export type SlotStatus = "AVAILABLE" | "HOLD_LOCKED" | "BOOKED" | "MAINTENANCE";

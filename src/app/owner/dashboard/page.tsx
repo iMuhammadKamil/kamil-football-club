@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { 
   DollarSign, 
@@ -19,8 +19,50 @@ import {
 } from "lucide-react";
 import { formatPKR } from "@/lib/utils";
 
+const DEFAULT_SHIFTS = [
+  {
+    id: "SHIFT-9921",
+    caretaker: "Chacha Tariq",
+    date: "Nov 05, 03:15 AM",
+    expected: 34000,
+    actual: 34000,
+    diff: 0,
+    status: "CLEARED",
+  },
+  {
+    id: "SHIFT-9844",
+    caretaker: "Nadeem Akhtar",
+    date: "Nov 04, 03:00 AM",
+    expected: 28500,
+    actual: 27500,
+    diff: -1000,
+    status: "AUDIT_FLAGGED",
+    alertDispatched: true,
+  },
+  {
+    id: "SHIFT-9781",
+    caretaker: "Chacha Tariq",
+    date: "Nov 03, 03:10 AM",
+    expected: 41000,
+    actual: 41200,
+    diff: 200,
+    status: "CLEARED",
+  },
+];
+
 export default function OwnerDashboardPage() {
-  const [selectedTimeframe, setSelectedTimeframe] = useState<"WEEK" | "MONTH">("MONTH");
+  const [shiftAuditLogs, setShiftAuditLogs] = useState(DEFAULT_SHIFTS);
+
+  useEffect(() => {
+    fetch("/api/owner/reconciliation")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.shifts && Array.isArray(data.shifts)) {
+          setShiftAuditLogs(data.shifts);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Commercial Metrics (Based on 6% Commission model)
   const grossRevenue = 485000;
@@ -31,39 +73,8 @@ export default function OwnerDashboardPage() {
   const digitalCollections = 312000; // Raast & Wallets
   const physicalCash = 173000; // Collected by caretakers on field
 
-  const shiftAuditLogs = [
-    {
-      id: "SHIFT-9921",
-      caretaker: "Chacha Tariq",
-      date: "Nov 05, 03:15 AM",
-      expected: 34000,
-      actual: 34000,
-      diff: 0,
-      status: "CLEARED",
-    },
-    {
-      id: "SHIFT-9844",
-      caretaker: "Nadeem Akhtar",
-      date: "Nov 04, 03:00 AM",
-      expected: 28500,
-      actual: 27500,
-      diff: -1000,
-      status: "AUDIT_FLAGGED", // Shortage > Rs. 500
-      alertDispatched: true,
-    },
-    {
-      id: "SHIFT-9781",
-      caretaker: "Chacha Tariq",
-      date: "Nov 03, 03:10 AM",
-      expected: 41000,
-      actual: 41200,
-      diff: +200,
-      status: "CLEARED",
-    },
-  ];
-
   return (
-    <main className="min-h-screen bg-[#070A0F] py-8 sm:py-12">
+    <main className="min-h-screen bg-[#090D10] py-8 sm:py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-dark-border pb-6">
@@ -73,10 +84,10 @@ export default function OwnerDashboardPage() {
               Venue Owner Commercial Portal
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-display mt-1">
-              Kamil FC Mega Sports Complex — Revenue & Audit Ledger
+              Karachi United Football Stadium — Revenue &amp; Audit Ledger
             </h1>
             <p className="text-xs sm:text-sm text-gray-400 mt-1">
-              Khayaban-e-Ittehad, Phase 6 DHA, Karachi • Multi-Pitch Performance
+              Plot ST-20, Block 1, Scheme 5, Clifton, Karachi • Multi-Pitch Performance
             </p>
           </div>
 
@@ -174,7 +185,7 @@ export default function OwnerDashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 rounded-xl bg-dark-elevated border border-neon-green/30 space-y-2">
               <div className="flex justify-between items-center text-xs">
-                <span className="font-bold text-white">Main Stadium (11-a-Side)</span>
+                <span className="font-bold text-white">KU Main Stadium (11-a-Side)</span>
                 <span className="text-neon-green font-extrabold font-mono">Rs. 252,000</span>
               </div>
               <div className="w-full bg-dark h-2 rounded-full overflow-hidden">
@@ -188,7 +199,7 @@ export default function OwnerDashboardPage() {
 
             <div className="p-4 rounded-xl bg-dark-elevated border border-dark-border space-y-2">
               <div className="flex justify-between items-center text-xs">
-                <span className="font-bold text-white">The Cage Alpha (7-a-Side)</span>
+                <span className="font-bold text-white">Clifton Sector (7-a-Side)</span>
                 <span className="text-neon-cyan font-extrabold font-mono">Rs. 132,000</span>
               </div>
               <div className="w-full bg-dark h-2 rounded-full overflow-hidden">
@@ -202,7 +213,7 @@ export default function OwnerDashboardPage() {
 
             <div className="p-4 rounded-xl bg-dark-elevated border border-dark-border space-y-2">
               <div className="flex justify-between items-center text-xs">
-                <span className="font-bold text-white">Padel Court 1 (Panoramic)</span>
+                <span className="font-bold text-white">Sea View Cage (5-a-Side)</span>
                 <span className="text-neon-yellow font-extrabold font-mono">Rs. 101,000</span>
               </div>
               <div className="w-full bg-dark h-2 rounded-full overflow-hidden">

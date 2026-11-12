@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function CaretakerPage() {
   return (
-    <main className="min-h-screen bg-[#070A0F] py-6 sm:py-10">
+    <main className="min-h-screen bg-[#090D10] py-6 sm:py-10">
       <CaretakerQuickCheckin />
     </main>
   );

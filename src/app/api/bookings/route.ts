@@ -31,6 +31,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required booking fields" }, { status: 400 });
     }
 
+    const slotPrefix = String(slotTime).slice(0, 5);
+    const conflict = bookingStore.find(
+      (b) =>
+        b.checkInStatus !== "NO_SHOW" &&
+        b.groundId === groundId &&
+        b.pitchName === (pitchName || "Main Pitch") &&
+        b.slotDate === slotDate &&
+        b.slotTime?.startsWith(slotPrefix)
+    );
+    if (conflict) {
+      return NextResponse.json(
+        { error: "This pitch slot was just booked by another captain. Please choose another time." },
+        { status: 409 }
+      );
+    }
+
     const pinCode = generatePinCode();
     const bookingId = `BK-${Math.floor(100000 + Math.random() * 900000)}`;
     const deposit = depositAmount !== undefined ? depositAmount : Math.round(totalAmount * 0.3);

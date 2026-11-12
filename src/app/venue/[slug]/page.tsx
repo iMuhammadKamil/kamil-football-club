@@ -15,7 +15,7 @@ import {
   Layers, 
   CheckCircle2
 } from "lucide-react";
-import { MOCK_VENUES } from "@/data/mockVenues";
+import { MOCK_VENUES, SPORT_IMAGES } from "@/data/mockVenues";
 import { formatPKR } from "@/lib/utils";
 import BookingModal from "@/components/BookingModal";
 import WeeklySlotMatrix from "@/components/WeeklySlotMatrix";
@@ -47,6 +47,7 @@ export default function VenueDetailPage() {
 
   const lowestPrice = Math.min(...venue.pitches.map((p) => p.pricePerHour));
   const has11aSide = venue.pitches.some((p) => p.sportType === "FOOTBALL_11A_SIDE");
+  const fallbackImg = SPORT_IMAGES[venue.pitches[0]?.sportType || "FOOTBALL_11A_SIDE"];
 
   const handleSlotSelectedFromMatrix = (pitch: Pitch, slot: TimeSlot) => {
     setPreSelectedPitch(pitch);
@@ -61,7 +62,7 @@ export default function VenueDetailPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#070A0F] py-6 sm:py-10">
+    <main className="min-h-screen bg-[#090D10] py-6 sm:py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         {/* Navigation Breadcrumb */}
         <div className="flex items-center justify-between text-xs text-gray-400">
@@ -70,7 +71,7 @@ export default function VenueDetailPage() {
             Back to Grounds
           </Link>
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-full bg-neon-green/10 border border-neon-green/30 text-neon-green font-bold text-[10px]">
+            <span className="px-2.5 py-0.5 rounded-full bg-neon-green/10 border border-neon-green/30 text-neon-green font-bold text-[10px]">
               {venue.city} • Verified Facility
             </span>
           </div>
@@ -85,13 +86,13 @@ export default function VenueDetailPage() {
                 alt={venue.name}
                 className="w-full h-full object-cover transition-all duration-300"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=80";
+                  (e.target as HTMLImageElement).src = fallbackImg;
                 }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#070A0F] via-transparent to-transparent opacity-80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#090D10] via-transparent to-transparent opacity-80" />
 
               {has11aSide && (
-                <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-neon-green text-dark font-extrabold text-xs uppercase tracking-wider shadow-lg flex items-center gap-1.5">
+                <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-neon-cyan text-dark font-extrabold text-xs uppercase tracking-wider shadow-lg flex items-center gap-1.5">
                   <Flame className="w-4 h-4 fill-current" />
                   FIFA Standard 11-a-Side Stadium
                 </div>
@@ -103,7 +104,7 @@ export default function VenueDetailPage() {
                     {venue.name}
                   </h1>
                   <p className="text-xs sm:text-sm text-gray-300 flex items-center gap-1.5 mt-1">
-                    <MapPin className="w-4 h-4 text-neon-green shrink-0" />
+                    <MapPin className="w-4 h-4 text-neon-cyan shrink-0" />
                     {venue.address}
                   </p>
                 </div>
@@ -117,15 +118,15 @@ export default function VenueDetailPage() {
                     key={idx}
                     onClick={() => setActiveImageIndex(idx)}
                     className={`relative w-20 h-14 rounded-xl overflow-hidden border transition-all ${
-                      activeImageIndex === idx ? "border-neon-green scale-105" : "border-dark-border opacity-60"
+                      activeImageIndex === idx ? "border-neon-cyan scale-105" : "border-dark-border opacity-60"
                     }`}
                   >
                     <img
                       src={img}
-                      alt="thumbnail"
+                      alt={`${venue.name} view ${idx + 1}`}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=80";
+                        (e.target as HTMLImageElement).src = fallbackImg;
                       }}
                     />
                   </button>
@@ -205,49 +206,60 @@ export default function VenueDetailPage() {
             {venue.pitches.map((pitch) => {
               const badge = getSportBadge(pitch.sportType);
               const is11Side = pitch.sportType === "FOOTBALL_11A_SIDE";
+              const pitchImg = SPORT_IMAGES[pitch.sportType];
               return (
                 <div
                   key={pitch.id}
-                  className={`p-5 rounded-2xl border transition-all ${
+                  className={`rounded-2xl border overflow-hidden transition-all ${
                     is11Side
-                      ? "bg-dark-card border-neon-green/50 shadow-neon-green/10 shadow-lg"
-                      : "bg-dark-card border-dark-border hover:border-gray-500"
+                      ? "bg-dark-card border-neon-cyan/50 shadow-lg"
+                      : "bg-dark-card border-dark-border hover:border-[#00C2A1]/40"
                   }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${badge.bg}`}>
-                        {badge.label}
-                      </span>
-                      <h3 className="text-base font-bold text-white mt-1.5 font-display">
+                  <div className="relative h-36 w-full overflow-hidden bg-[#090D10]">
+                    <img
+                      src={pitchImg}
+                      alt={pitch.name}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0C1611] via-[#0C1611]/20 to-transparent" />
+                    <span className={`absolute top-3 left-3 text-[10px] font-bold px-2.5 py-0.5 rounded-full border backdrop-blur-md ${badge.bg}`}>
+                      {badge.label}
+                    </span>
+                  </div>
+
+                  <div className="p-5">
+                    <div className="flex items-center justify-between gap-2">
+                      <h3 className="text-base font-bold text-white font-display">
                         {pitch.name}
                       </h3>
+                      <div className="text-right shrink-0">
+                        <span className="text-base font-extrabold text-neon-green">
+                          {formatPKR(pitch.pricePerHour)}
+                        </span>
+                        <span className="text-[10px] text-gray-400 block">/ hour</span>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <span className="text-base font-extrabold text-neon-green">
-                        {formatPKR(pitch.pricePerHour)}
-                      </span>
-                      <span className="text-[10px] text-gray-400 block">/ hour</span>
-                    </div>
-                  </div>
 
-                  <div className="mt-3 pt-3 border-t border-dark-border/60 text-xs text-gray-300 space-y-1">
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Dimensions:</span>
-                      <span className="font-semibold text-white">{pitch.dimensions || "Standard"}</span>
+                    <div className="mt-3 pt-3 border-t border-dark-border/60 text-xs text-gray-300 space-y-1">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Dimensions:</span>
+                        <span className="font-semibold text-white">{pitch.dimensions || "Standard"}</span>
+                      </div>
+                      <div className="flex justify-between gap-2">
+                        <span className="text-gray-400 shrink-0">Surface Spec:</span>
+                        <span className="font-semibold text-white text-right">{pitch.surfaceType}</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Surface Spec:</span>
-                      <span className="font-semibold text-white">{pitch.surfaceType}</span>
-                    </div>
-                  </div>
 
-                  <button
-                    onClick={() => handleOpenPitchBooking(pitch)}
-                    className="w-full mt-4 py-2 rounded-xl bg-dark-elevated hover:bg-neon-green hover:text-dark text-white text-xs font-bold border border-dark-border hover:border-neon-green transition-all"
-                  >
-                    Select Pitch & View Slots
-                  </button>
+                    <button
+                      onClick={() => handleOpenPitchBooking(pitch)}
+                      className="w-full mt-4 py-2.5 rounded-full bg-dark-elevated hover:bg-neon-cyan hover:text-dark text-white text-xs font-bold border border-dark-border hover:border-neon-cyan transition-all"
+                    >
+                      Select Pitch & View Slots
+                    </button>
+                  </div>
                 </div>
               );
             })}

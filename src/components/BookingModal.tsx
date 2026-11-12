@@ -53,6 +53,8 @@ export default function BookingModal({
 
   const [slots, setSlots] = useState<TimeSlot[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(initialSlot || null);
+  const selectedSlotRef = React.useRef<TimeSlot | null>(selectedSlot);
+  selectedSlotRef.current = selectedSlot;
 
   const [holdSecondsLeft, setHoldSecondsLeft] = useState<number>(600);
   const [holdTimerActive, setHoldTimerActive] = useState<boolean>(!!initialSlot);
@@ -81,38 +83,79 @@ export default function BookingModal({
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const [confirmedBooking, setConfirmedBooking] = useState<BookingDetails | null>(null);
+  const [holdExpiredMsg, setHoldExpiredMsg] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [voucherStatus, setVoucherStatus] = useState<{ ok: boolean; text: string } | null>(null);
+  const [serverBookings, setServerBookings] = useState<any[]>([]);
+  const [serverLocks, setServerLocks] = useState<{ slotId: string }[]>([]);
 
   useEffect(() => {
-    const generated = generateDaySlots(selectedPitch.id, selectedDate, selectedPitch.pricePerHour);
+    Promise.all([fetch("/api/bookings"), fetch("/api/slots/lock")])
+      .then(async ([bRes, lRes]) => {
+        const bData = await bRes.json();
+        const lData = await lRes.json();
+        if (bData.bookings) setServerBookings(bData.bookings);
+        if (lData.locks) setServerLocks(lData.locks);
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    const activeSlot = selectedSlotRef.current;
+    const generated = generateDaySlots(selectedPitch.id, selectedDate, selectedPitch.pricePerHour).map(
+      (slot) => {
+        const isBookedOnServer = serverBookings.some(
+          (b) =>
+            b.groundId === venue.id &&
+            b.pitchName === selectedPitch.name &&
+            b.slotDate === selectedDate &&
+            b.slotTime?.startsWith(slot.startTime)
+        );
+        const isLockedOnServer =
+          serverLocks.some((l) => l.slotId === slot.id) && activeSlot?.id !== slot.id;
+        if (isBookedOnServer) return { ...slot, status: "BOOKED" as const };
+        if (isLockedOnServer && slot.status === "AVAILABLE") {
+          return { ...slot, status: "HOLD_LOCKED" as const };
+        }
+        return slot;
+      }
+    );
     setSlots(generated);
     if (!initialSlot || initialSlot.pitchId !== selectedPitch.id || initialSlot.date !== selectedDate) {
-      if (!selectedSlot || selectedSlot.pitchId !== selectedPitch.id) {
+      if (!activeSlot || activeSlot.pitchId !== selectedPitch.id || activeSlot.date !== selectedDate) {
         setSelectedSlot(null);
         setHoldTimerActive(false);
       }
     }
-  }, [selectedPitch, selectedDate]);
+  }, [venue.id, initialSlot, selectedPitch, selectedDate, serverBookings, serverLocks]);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (holdTimerActive && holdSecondsLeft > 0) {
-      interval = setInterval(() => {
-        setHoldSecondsLeft((prev) => {
-          if (prev <= 1) {
-            setHoldTimerActive(false);
-            setSelectedSlot(null);
-            alert("Your 10-minute slot hold has expired. Please reselect your slot.");
-            return 600;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
+    if (!holdTimerActive) return;
+    const interval = setInterval(() => {
+      setHoldSecondsLeft((prev) => Math.max(0, prev - 1));
+    }, 1000);
     return () => clearInterval(interval);
+  }, [holdTimerActive]);
+
+  useEffect(() => {
+    if (holdTimerActive && holdSecondsLeft === 0) {
+      setHoldTimerActive(false);
+      setSelectedSlot(null);
+      setHoldSecondsLeft(600);
+      setHoldExpiredMsg("Your 10-minute slot hold expired. Please reselect a slot.");
+    }
   }, [holdTimerActive, holdSecondsLeft]);
 
   const handleSelectSlot = async (slot: TimeSlot) => {
     if (slot.status === "BOOKED") return;
+    setHoldExpiredMsg(null);
+    if (selectedSlot && selectedSlot.id !== slot.id) {
+      fetch("/api/slots/lock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slotId: selectedSlot.id, action: "RELEASE" }),
+      }).catch(() => {});
+    }
     setSelectedSlot(slot);
     setHoldSecondsLeft(600);
     setHoldTimerActive(true);
@@ -123,9 +166,20 @@ export default function BookingModal({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ slotId: slot.id, phone: captainPhone || "CAPTAIN_APP" }),
       });
-    } catch (e) {
+    } catch {
       console.warn("Synced locally");
     }
+  };
+
+  const handleCloseModal = () => {
+    if (selectedSlot && step !== "CONFIRMED") {
+      fetch("/api/slots/lock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slotId: selectedSlot.id, action: "RELEASE" }),
+      }).catch(() => {});
+    }
+    onClose();
   };
 
   const updateAddOnQty = (addOnId: string, delta: number) => {
@@ -144,9 +198,9 @@ export default function BookingModal({
     if (voucherCodeInput.toUpperCase().includes("VOUCH")) {
       setVoucherDiscount(4500);
       setVoucherApplied(true);
-      alert("Voucher Applied! Rs. 4,500 credit deducted from total.");
+      setVoucherStatus({ ok: true, text: "Voucher Applied! Rs. 4,500 credit deducted from total." });
     } else {
-      alert("Invalid voucher code. Example format: KFC-VOUCH-1234");
+      setVoucherStatus({ ok: false, text: "Invalid voucher code. Example format: KFC-VOUCH-1234" });
     }
   };
 
@@ -166,18 +220,19 @@ export default function BookingModal({
   // SERVER-SIDE SYNCED CONFIRMATION
   const handleConfirmBooking = async () => {
     if (!selectedSlot) return;
+    setFormError(null);
     if (!captainName.trim() || !captainPhone.trim()) {
-      alert("Please enter Captain Name and WhatsApp Mobile Number.");
+      setFormError("Please enter Captain Name and WhatsApp Mobile Number.");
       return;
     }
 
     if (!acceptFootwearPolicy) {
-      alert("Please accept the Footwear Stud Policy.");
+      setFormError("Please accept the Footwear Stud Policy.");
       return;
     }
 
     if (!acceptCaptainLiability) {
-      alert("Please accept the Captain Liability agreement.");
+      setFormError("Please accept the Captain Liability agreement.");
       return;
     }
 
@@ -199,12 +254,13 @@ export default function BookingModal({
           captainName,
           captainPhone,
           paymentMethod,
+          transactionRef: trxRef || undefined,
           squadMembers: enableSquadPay ? validSquad : undefined,
         }),
       });
 
       const data = await res.json();
-      if (!data.success) {
+      if (!res.ok || !data.success) {
         throw new Error(data.error || "Failed to create booking");
       }
 
@@ -237,17 +293,28 @@ export default function BookingModal({
       };
 
       setConfirmedBooking(generatedBooking);
+      setHoldTimerActive(false);
       setStep("CONFIRMED");
+      fetch("/api/slots/lock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slotId: selectedSlot.id, action: "RELEASE" }),
+      }).catch(() => {});
+      window.dispatchEvent(new Event("kfc:bookings-updated"));
       onBookingConfirmed(generatedBooking);
     } catch (e: any) {
-      alert(`Booking error: ${e.message || "Failed to connect to server"}`);
+      setFormError(e.message || "Failed to connect to server");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
+    try {
+      navigator.clipboard?.writeText(text);
+    } catch {
+      // ignore clipboard errors
+    }
     setCopiedIban(true);
     setTimeout(() => setCopiedIban(false), 2500);
   };
@@ -258,12 +325,12 @@ export default function BookingModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-2xl bg-[#0D131F] border border-dark-border rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto max-h-[92vh]">
+      <div className="relative w-full max-w-2xl bg-[#0C1611] border border-dark-border rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto max-h-[92vh]">
         {/* Header */}
         <div className="p-4 sm:p-5 border-b border-dark-border bg-dark-card flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-neon-green/10 text-neon-green border border-neon-green/30">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-neon-cyan/15 text-neon-cyan border border-neon-cyan/30">
                 {venue.city}
               </span>
               <h2 className="text-base sm:text-lg font-bold text-white font-display">
@@ -276,7 +343,7 @@ export default function BookingModal({
           </div>
 
           <button
-            onClick={onClose}
+            onClick={handleCloseModal}
             className="p-1.5 rounded-lg bg-dark-elevated text-gray-400 hover:text-white border border-dark-border"
           >
             <X className="w-5 h-5" />
@@ -295,6 +362,12 @@ export default function BookingModal({
             <div className="font-mono font-bold bg-dark text-neon-yellow px-2 py-0.5 rounded border border-neon-yellow/30">
               {formattedHoldTime}
             </div>
+          </div>
+        )}
+
+        {holdExpiredMsg && (
+          <div className="px-4 py-2 bg-[#E94A10]/15 border-b border-[#E94A10]/30 text-xs text-[#FF7A4D]">
+            {holdExpiredMsg}
           </div>
         )}
 
@@ -326,7 +399,7 @@ export default function BookingModal({
                             {pitch.name}
                           </span>
                           {is11Side && (
-                            <span className="px-1.5 py-0.2 rounded text-[9px] font-extrabold bg-neon-green text-[#070A0F]">
+                            <span className="px-1.5 py-0.2 rounded text-[9px] font-extrabold bg-neon-green text-[#090D10]">
                               11v11 Full Stadium
                             </span>
                           )}
@@ -364,7 +437,7 @@ export default function BookingModal({
                         onClick={() => setSelectedDate(dStr)}
                         className={`px-3 py-2 rounded-xl border text-center min-w-[70px] shrink-0 transition-all ${
                           active
-                            ? "bg-neon-green text-[#070A0F] border-neon-green font-bold shadow-md"
+                            ? "bg-neon-green text-[#090D10] border-neon-green font-bold shadow-md"
                             : "bg-dark-card text-gray-300 border-dark-border hover:border-gray-500"
                         }`}
                       >
@@ -429,7 +502,7 @@ export default function BookingModal({
 
                     let btnClasses = "bg-dark-card border-dark-border text-white hover:border-neon-green";
                     if (isSelected) {
-                      btnClasses = "bg-neon-green text-[#070A0F] border-neon-green font-bold shadow-neon-green/20 shadow-lg";
+                      btnClasses = "bg-neon-green text-[#090D10] border-neon-green font-bold shadow-neon-green/20 shadow-lg";
                     } else if (isBooked) {
                       btnClasses = "bg-red-950/20 border-red-900/30 text-gray-500 cursor-not-allowed line-through";
                     } else if (isLocked) {
@@ -646,23 +719,30 @@ export default function BookingModal({
           {step === "PAYMENT" && (
             <div className="space-y-5">
               {/* Reschedule Voucher Code Input */}
-              <div className="bg-dark-card p-3 rounded-xl border border-dark-border flex gap-2">
-                <div className="relative flex-1">
-                  <Tag className="w-4 h-4 text-neon-cyan absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    placeholder="Have a Weather Reschedule Voucher? (e.g. KFC-VOUCH-1234)"
-                    value={voucherCodeInput}
-                    onChange={(e) => setVoucherCodeInput(e.target.value)}
-                    className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-dark border border-dark-border text-white text-xs font-mono uppercase focus:outline-none focus:border-neon-cyan"
-                  />
+              <div className="space-y-1.5">
+                <div className="bg-dark-card p-3 rounded-xl border border-dark-border flex gap-2">
+                  <div className="relative flex-1">
+                    <Tag className="w-4 h-4 text-neon-cyan absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      placeholder="Have a Weather Reschedule Voucher? (e.g. KFC-VOUCH-1234)"
+                      value={voucherCodeInput}
+                      onChange={(e) => setVoucherCodeInput(e.target.value)}
+                      className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-dark border border-dark-border text-white text-xs font-mono uppercase focus:outline-none focus:border-neon-cyan"
+                    />
+                  </div>
+                  <button
+                    onClick={handleApplyVoucher}
+                    className="px-3 py-1.5 rounded-lg bg-neon-cyan text-dark font-bold text-xs hover:bg-neon-cyan/90 shrink-0"
+                  >
+                    Apply
+                  </button>
                 </div>
-                <button
-                  onClick={handleApplyVoucher}
-                  className="px-3 py-1.5 rounded-lg bg-neon-cyan text-dark font-bold text-xs hover:bg-neon-cyan/90 shrink-0"
-                >
-                  Apply
-                </button>
+                {voucherStatus && (
+                  <p className={`text-[11px] px-1 ${voucherStatus.ok ? "text-neon-green" : "text-[#FF7A4D]"}`}>
+                    {voucherStatus.text}
+                  </p>
+                )}
               </div>
 
               {/* Bill Summary */}
@@ -986,6 +1066,13 @@ export default function BookingModal({
           )}
         </div>
 
+        {/* Footer Validation Error */}
+        {formError && step !== "CONFIRMED" && (
+          <div className="px-4 py-2 bg-[#E94A10]/15 border-t border-[#E94A10]/30 text-xs text-[#FF7A4D]">
+            {formError}
+          </div>
+        )}
+
         {/* Footer Navigation CTAs */}
         <div className="p-4 border-t border-dark-border bg-dark-card flex items-center justify-between">
           {step === "SLOTS" && (
@@ -998,7 +1085,10 @@ export default function BookingModal({
               </div>
               <button
                 disabled={!selectedSlot}
-                onClick={() => setStep("ADDONS_SQUAD")}
+                onClick={() => {
+                  setFormError(null);
+                  setStep("ADDONS_SQUAD");
+                }}
                 className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-neon-green text-dark disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neon-green/90 transition-all flex items-center gap-2 glow-neon-green"
               >
                 Next: Add-ons & Squad
@@ -1010,7 +1100,10 @@ export default function BookingModal({
           {step === "ADDONS_SQUAD" && (
             <>
               <button
-                onClick={() => setStep("SLOTS")}
+                onClick={() => {
+                  setFormError(null);
+                  setStep("SLOTS");
+                }}
                 className="px-4 py-2 rounded-xl text-xs font-bold text-gray-400 hover:text-white"
               >
                 Back
@@ -1018,17 +1111,18 @@ export default function BookingModal({
               <button
                 onClick={() => {
                   if (!captainName.trim() || !captainPhone.trim()) {
-                    alert("Please enter Captain Name and WhatsApp Phone Number.");
+                    setFormError("Please enter Captain Name and WhatsApp Phone Number.");
                     return;
                   }
                   if (!acceptFootwearPolicy) {
-                    alert("Please accept the Footwear Stud Inspection disclaimer.");
+                    setFormError("Please accept the Footwear Stud Inspection disclaimer.");
                     return;
                   }
                   if (!acceptCaptainLiability) {
-                    alert("Please accept the Captain Liability agreement.");
+                    setFormError("Please accept the Captain Liability agreement.");
                     return;
                   }
+                  setFormError(null);
                   setStep("PAYMENT");
                 }}
                 className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-neon-green text-dark hover:bg-neon-green/90 transition-all flex items-center gap-2 glow-neon-green"
@@ -1042,7 +1136,10 @@ export default function BookingModal({
           {step === "PAYMENT" && (
             <>
               <button
-                onClick={() => setStep("ADDONS_SQUAD")}
+                onClick={() => {
+                  setFormError(null);
+                  setStep("ADDONS_SQUAD");
+                }}
                 className="px-4 py-2 rounded-xl text-xs font-bold text-gray-400 hover:text-white"
               >
                 Back

@@ -57,6 +57,7 @@ export default function CaretakerQuickCheckin() {
   const [walkInPhone, setWalkInPhone] = useState<string>("");
   const [walkInAmount, setWalkInAmount] = useState<number>(4500);
   const [walkInPitch, setWalkInPitch] = useState<string>("The Cage Alpha (7-a-Side)");
+  const [walkInError, setWalkInError] = useState<string | null>(null);
 
   // Caretaker Live Tournament Score Keeper
   const [scoreTeamA, setScoreTeamA] = useState<number>(2);
@@ -65,15 +66,23 @@ export default function CaretakerQuickCheckin() {
   // Live bookings from server
   const [activeBookings, setActiveBookings] = useState<StoredBookingItem[]>([]);
 
-  // Fetch real server bookings on mount and on demand
+  // Fetch real server bookings & live score on mount
   const fetchLiveBookings = async () => {
     try {
-      const res = await fetch("/api/caretaker/verify");
-      const data = await res.json();
+      const [verifyRes, scoreRes] = await Promise.all([
+        fetch("/api/caretaker/verify"),
+        fetch("/api/tournament/score?matchId=QF-M1"),
+      ]);
+      const data = await verifyRes.json();
       if (data.bookings) {
         setActiveBookings(data.bookings);
       }
-    } catch (e) {
+      const scoreData = await scoreRes.json();
+      if (scoreData.score) {
+        setScoreTeamA(scoreData.score.scoreA);
+        setScoreTeamB(scoreData.score.scoreB);
+      }
+    } catch {
       console.warn("Could not fetch server bookings");
     }
   };
@@ -92,7 +101,7 @@ export default function CaretakerQuickCheckin() {
     setPinInput((prev) => prev.slice(0, -1));
   };
 
-  // VERIFY PIN VIA SERVER API
+  // LOOKUP PIN VIA SERVER API
   const handleVerifyPin = async () => {
     setSearchError(null);
     setSuccessMessage(null);
@@ -111,9 +120,8 @@ export default function CaretakerQuickCheckin() {
         setSearchedBooking(null);
       } else {
         setSearchedBooking(data.booking);
-        fetchLiveBookings(); // refresh live list
       }
-    } catch (e: any) {
+    } catch {
       setSearchError("Failed to communicate with verification server.");
     } finally {
       setLoading(false);
@@ -122,37 +130,55 @@ export default function CaretakerQuickCheckin() {
 
   const handleConfirmCheckin = async () => {
     if (!searchedBooking) return;
-    setSuccessMessage(`✓ Check-In Confirmed for ${searchedBooking.captainName}! Cash received logged in owner audit trail.`);
-    setSearchedBooking((prev) => prev ? { ...prev, checkInStatus: "CHECKED_IN", cashDue: 0 } : null);
-    fetchLiveBookings();
+    setLoading(true);
+    setSearchError(null);
+    try {
+      const res = await fetch("/api/caretaker/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "CONFIRM_CHECKIN", pinCode: searchedBooking.pinCode }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setSearchError(data.error || "Check-in failed.");
+      } else {
+        setSearchedBooking(data.booking);
+        setSuccessMessage(`✓ Check-In Confirmed for ${data.booking.captainName}! Cash received logged in owner audit trail.`);
+        fetchLiveBookings();
+      }
+    } catch {
+      setSearchError("Failed to confirm check-in on server.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSendReminder = async (booking: StoredBookingItem) => {
     try {
-      await fetch("/api/bookings/remind", {
+      const res = await fetch("/api/bookings/remind", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           bookingId: booking.id,
           captainName: booking.captainName,
           captainPhone: booking.captainPhone,
-          venueName: "Kamil FC Mega Sports Complex (DHA Phase 6)",
+          venueName: "POPO FC Ground (F-11/2 Islamabad)",
           pitchName: booking.pitchName,
           slotTime: booking.slotTime,
           pinCode: booking.pinCode,
           remainingAmount: booking.cashDue,
         }),
       });
-      alert(`Automated 2-Hour WhatsApp Reminder sent to ${booking.captainName} (${booking.captainPhone})!`);
-    } catch (e) {
-      alert("WhatsApp reminder dispatched.");
+      const data = await res.json();
+      setSuccessMessage(data.message || `Automated 2-Hour WhatsApp Reminder sent to ${booking.captainName}!`);
+    } catch {
+      setSearchError("Failed to dispatch WhatsApp reminder.");
     }
   };
 
   const handleExtendSlot = async (booking: StoredBookingItem) => {
-    const extensionFee = 2500;
     try {
-      await fetch("/api/caretaker/operations", {
+      const res = await fetch("/api/caretaker/operations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -161,37 +187,92 @@ export default function CaretakerQuickCheckin() {
           isSurgeActive: true,
         }),
       });
-    } catch (e) {
-      console.warn("Logged locally");
+      const data = await res.json();
+      const extensionFee = data.additionalAmount || 3600;
+      if (searchedBooking && searchedBooking.id === booking.id) {
+        setSearchedBooking({
+          ...searchedBooking,
+          totalAmount: searchedBooking.totalAmount + extensionFee,
+          cashDue: searchedBooking.cashDue + extensionFee,
+          isExtended: true,
+        });
+      }
+      setSuccessMessage(data.message || `Match extended +30 mins (+Rs. ${extensionFee}).`);
+    } catch {
+      setSearchError("Failed to extend slot.");
     }
-
-    if (searchedBooking && searchedBooking.id === booking.id) {
-      setSearchedBooking({
-        ...searchedBooking,
-        totalAmount: searchedBooking.totalAmount + extensionFee,
-        isExtended: true,
-      });
-    }
-
-    alert(`Match extended by +30 Mins! Collect Rs. ${extensionFee} additional cash from the captain. Recorded in audit ledger.`);
   };
 
   const handleRejectFootwear = async (booking: StoredBookingItem) => {
-    if (confirm(`Reject player/team for wearing prohibited metal studs on artificial turf? This protects the owner against refund claims.`)) {
-      alert(`Violation Logged: Team ${booking.captainName} turned away for metal cleats. Grounds bylaws enforced.`);
+    try {
+      const res = await fetch("/api/caretaker/operations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "REJECT_ILLEGAL_FOOTWEAR",
+          bookingId: booking.id,
+          captainPhone: booking.captainPhone,
+        }),
+      });
+      const data = await res.json();
+      setSuccessMessage(data.message || `Violation Logged for ${booking.captainName}.`);
+    } catch {
+      setSearchError("Failed to log footwear rejection.");
     }
   };
 
   const handleIssueWeatherVoucher = async (booking: StoredBookingItem) => {
-    const voucherCode = `KFC-VOUCH-${Math.floor(1000 + Math.random() * 9000)}`;
-    alert(`Rain/Smog Cancellation: Digital Reschedule Voucher ${voucherCode} generated for ${booking.captainName}. Sent to their WhatsApp.`);
+    try {
+      const res = await fetch("/api/caretaker/operations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "ISSUE_WEATHER_VOUCHER",
+          bookingId: booking.id,
+          captainName: booking.captainName,
+          captainPhone: booking.captainPhone,
+          venueName: "POPO FC Ground (F-11/2 Islamabad)",
+          originalAmount: booking.totalAmount,
+        }),
+      });
+      const data = await res.json();
+      setSuccessMessage(
+        data.message || `Weather voucher ${data.voucherCode} generated for ${booking.captainName}.`
+      );
+    } catch {
+      setSearchError("Failed to generate weather voucher.");
+    }
+  };
+
+  const handleUpdateScore = async (nextA: number, nextB: number, isFinal = false) => {
+    setScoreTeamA(nextA);
+    setScoreTeamB(nextB);
+    try {
+      const res = await fetch("/api/tournament/score", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          matchId: "QF-M1",
+          scoreA: nextA,
+          scoreB: nextB,
+          isFinal,
+        }),
+      });
+      const data = await res.json();
+      if (isFinal && data.success) {
+        setSuccessMessage(data.message || "Match score finalized & bracket updated.");
+      }
+    } catch {
+      setSearchError("Failed to sync score with tournament bracket.");
+    }
   };
 
   const handleConfirmWalkIn = async () => {
     if (!walkInPhone || walkInPhone.trim().length < 10) {
-      alert("Anti-Theft Requirement: Enter an active 11-digit customer mobile number to log this walk-in.");
+      setWalkInError("Anti-Theft Requirement: Enter an active 11-digit customer mobile number.");
       return;
     }
+    setWalkInError(null);
 
     try {
       const res = await fetch("/api/caretaker/verify", {
@@ -205,14 +286,16 @@ export default function CaretakerQuickCheckin() {
         }),
       });
       const data = await res.json();
-      if (data.success) {
-        alert(`Walk-In Confirmed! PIN: ${data.pinCode}. Automated receipt logged for venue owner.`);
-        setWalkInModalOpen(false);
-        setWalkInPhone("");
-        fetchLiveBookings();
+      if (!res.ok || !data.success) {
+        setWalkInError(data.error || "Failed to log walk-in.");
+        return;
       }
-    } catch (e) {
-      alert("Walk-in recorded.");
+      setWalkInModalOpen(false);
+      setWalkInPhone("");
+      setSuccessMessage(`Walk-In Confirmed! PIN: ${data.pinCode}. Automated receipt logged for venue owner.`);
+      fetchLiveBookings();
+    } catch {
+      setWalkInError("Could not reach server to record walk-in.");
     }
   };
 
@@ -253,16 +336,16 @@ export default function CaretakerQuickCheckin() {
           <div>
             <div className="flex items-center gap-1.5">
               <span className="text-[10px] uppercase font-bold text-neon-green tracking-wider">
-                Official Pilot Venue
+                Active Ground Gate
               </span>
               <span className="px-1.5 py-0.2 rounded text-[9px] font-extrabold bg-neon-green/20 text-neon-green border border-neon-green/30">
-                Karachi DHA 6
+                Islamabad F-11/2
               </span>
             </div>
             <h2 className="text-sm font-bold text-white mt-0.5">
-              Kamil FC Mega Sports Complex
+              POPO FC Ground (F-11/2)
             </h2>
-            <p className="text-[11px] text-gray-400">Khayaban-e-Ittehad, Phase 6 DHA</p>
+            <p className="text-[11px] text-gray-400">78 Street 24, Sector F-11/2, Islamabad</p>
           </div>
           <button
             onClick={() => setWalkInModalOpen(true)}
@@ -311,7 +394,7 @@ export default function CaretakerQuickCheckin() {
             <div className="text-xs font-bold text-white">Karachi Strikers</div>
             <div className="text-2xl font-mono font-extrabold text-neon-green mt-1">{scoreTeamA}</div>
             <button
-              onClick={() => setScoreTeamA((prev) => prev + 1)}
+              onClick={() => handleUpdateScore(scoreTeamA + 1, scoreTeamB)}
               className="mt-1 px-2.5 py-1 rounded-lg bg-neon-green/20 text-neon-green text-[10px] font-bold border border-neon-green/40 hover:bg-neon-green hover:text-dark"
             >
               +1 Goal
@@ -324,7 +407,7 @@ export default function CaretakerQuickCheckin() {
             <div className="text-xs font-bold text-white">DHA Titans</div>
             <div className="text-2xl font-mono font-extrabold text-neon-cyan mt-1">{scoreTeamB}</div>
             <button
-              onClick={() => setScoreTeamB((prev) => prev + 1)}
+              onClick={() => handleUpdateScore(scoreTeamA, scoreTeamB + 1)}
               className="mt-1 px-2.5 py-1 rounded-lg bg-neon-cyan/20 text-neon-cyan text-[10px] font-bold border border-neon-cyan/40 hover:bg-neon-cyan hover:text-dark"
             >
               +1 Goal
@@ -335,7 +418,7 @@ export default function CaretakerQuickCheckin() {
         <div className="flex justify-between items-center text-[10px] text-gray-400">
           <span>Match: QF-M1 • Main Stadium</span>
           <button
-            onClick={() => alert(`Match finished! Karachi Strikers (${scoreTeamA}) - DHA Titans (${scoreTeamB}). Live tournament bracket updated.`)}
+            onClick={() => handleUpdateScore(scoreTeamA, scoreTeamB, true)}
             className="text-neon-yellow font-bold hover:underline"
           >
             End Match & Update Bracket
@@ -566,7 +649,7 @@ export default function CaretakerQuickCheckin() {
       {/* Anti-Theft Walk-In Booking Modal */}
       {walkInModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#0D131F] border border-dark-border rounded-2xl p-5 w-full max-w-sm space-y-4 shadow-2xl">
+          <div className="bg-[#0C1611] border border-dark-border rounded-2xl p-5 w-full max-w-sm space-y-4 shadow-2xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-neon-orange text-xs font-bold uppercase">
                 <FileText className="w-4 h-4" />
@@ -610,6 +693,12 @@ export default function CaretakerQuickCheckin() {
                 />
               </div>
             </div>
+
+            {walkInError && (
+              <p className="text-xs text-[#FF7A4D] bg-[#E94A10]/15 border border-[#E94A10]/30 px-3 py-2 rounded-lg">
+                {walkInError}
+              </p>
+            )}
 
             <button
               onClick={handleConfirmWalkIn}

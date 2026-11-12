@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { action, pinCode, customerPhone, amountCollected, pitchId, caretakerId, captainName, unpaidAmount } = body;
 
-    // ACTION: 4-DIGIT PIN CHECK-IN
+    // ACTION: 4-DIGIT PIN LOOKUP (does not auto-check-in until confirmed)
     if (action === "VERIFY_PIN") {
       if (!pinCode || pinCode.length !== 4) {
         return NextResponse.json({ error: "Invalid 4-digit PIN" }, { status: 400 });
@@ -24,6 +24,26 @@ export async function POST(req: NextRequest) {
       if (!existingBooking) {
         return NextResponse.json({
           error: `No booking found with PIN ${pinCode}. Please verify with captain.`,
+        }, { status: 404 });
+      }
+
+      return NextResponse.json({
+        success: true,
+        booking: existingBooking,
+        message: `PIN ${pinCode} matched for ${existingBooking.captainName}. Ready for check-in.`,
+      });
+    }
+
+    // ACTION: CONFIRM CHECK-IN & COLLECT CASH
+    if (action === "CONFIRM_CHECKIN") {
+      if (!pinCode || pinCode.length !== 4) {
+        return NextResponse.json({ error: "Invalid 4-digit PIN" }, { status: 400 });
+      }
+
+      const existingBooking = findBookingByPin(pinCode);
+      if (!existingBooking) {
+        return NextResponse.json({
+          error: `No booking found with PIN ${pinCode}.`,
         }, { status: 404 });
       }
 
@@ -40,7 +60,7 @@ export async function POST(req: NextRequest) {
         success: true,
         booking: updated,
         auditLog,
-        message: `PIN ${pinCode} verified successfully for ${existingBooking.captainName}! Pitch access granted.`,
+        message: `Check-in confirmed for ${existingBooking.captainName}! Pitch access granted.`,
       });
     }
 
@@ -60,9 +80,9 @@ export async function POST(req: NextRequest) {
         pinCode: generatedPin,
         captainName: `Walk-In (${customerPhone})`,
         captainPhone: customerPhone,
-        groundId: "kamil-fc-arena",
-        venueName: "Kamil FC Mega Sports Complex",
-        pitchName: pitchId || "Speed Arena (5-a-Side)",
+        groundId: "popo-fc-f11-islamabad",
+        venueName: "POPO FC Ground (F-11/2)",
+        pitchName: pitchId || "POPO Main 7-a-Side Turf",
         slotTime: "Current Tonight Slot",
         slotDate: new Date().toISOString().split("T")[0],
         totalAmount: finalAmount,
@@ -121,7 +141,7 @@ export async function POST(req: NextRequest) {
         data: {
           captainName: captainName || "Team Captain",
           unpaidAmount: unpaidAmount || 3000,
-          venueName: "Kamil FC Mega Sports Complex",
+          venueName: "POPO FC Ground (F-11/2 Islamabad)",
           strikeCount: 1,
         },
       });

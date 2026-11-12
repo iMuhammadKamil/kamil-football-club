@@ -8,6 +8,7 @@ export async function POST(req: NextRequest) {
       bookingId,
       captainName,
       captainPhone,
+      phone,
       venueName,
       pitchName,
       slotTime,
@@ -16,21 +17,23 @@ export async function POST(req: NextRequest) {
       address,
     } = body;
 
-    if (!captainPhone || !pinCode) {
+    const targetPhone = captainPhone || phone;
+
+    if (!targetPhone || !pinCode) {
       return NextResponse.json({ error: "Missing required booking details for reminder" }, { status: 400 });
     }
 
     const dispatch = await sendWhatsAppNotification({
-      toPhone: captainPhone,
+      toPhone: targetPhone,
       template: "PRE_MATCH_2HR_REMINDER",
       data: {
         captainName: captainName || "Team Captain",
-        venueName: venueName || "Kamil FC Mega Sports Complex (DHA 6 Karachi)",
-        pitchName: pitchName || "Main Stadium (11-a-Side)",
+        venueName: venueName || "POPO FC Ground (F-11/2 Islamabad)",
+        pitchName: pitchName || "POPO Main 7-a-Side Turf",
         time: slotTime || "20:00 - 20:50",
         pinCode,
         cashDue: remainingAmount || 0,
-        address: address || "Khayaban-e-Ittehad, Phase 6 DHA Karachi",
+        address: address || "78 Street 24, F-11/2 Multipurpose Ground, Islamabad",
       },
     });
 
@@ -38,7 +41,7 @@ export async function POST(req: NextRequest) {
       success: true,
       broadcastId: dispatch.messageId,
       preview: dispatch.previewText,
-      message: `2-Hour match reminder broadcasted to ${captainPhone} via WhatsApp.`,
+      message: `2-Hour match reminder broadcasted to ${targetPhone} via WhatsApp.`,
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Failed to broadcast reminder" }, { status: 500 });

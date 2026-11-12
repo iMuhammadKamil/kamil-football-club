@@ -22,6 +22,7 @@ export default function CaretakerShiftHandover() {
   const [notes, setNotes] = useState<string>("Floodlight shift ended 03:00 AM. 11-a-side nets rolled up.");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [shiftCompleted, setShiftCompleted] = useState<any | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const countedCash = Number(countedCashInput) || 0;
   const discrepancy = countedCash - expectedCash;
@@ -31,12 +32,13 @@ export default function CaretakerShiftHandover() {
 
   const handleSubmitHandover = async () => {
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
       const res = await fetch("/api/owner/reconciliation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          groundId: "kamil-fc-arena",
+          groundId: "karachi-united-stadium-clifton",
           caretakerName,
           expectedCash,
           actualCashCounted: countedCash,
@@ -45,9 +47,13 @@ export default function CaretakerShiftHandover() {
         }),
       });
       const data = await res.json();
-      setShiftCompleted(data);
-    } catch (e) {
-      alert("Shift handover submitted locally.");
+      if (!res.ok || !data.success) {
+        setSubmitError(data.error || "Failed to submit shift handover.");
+      } else {
+        setShiftCompleted(data);
+      }
+    } catch {
+      setSubmitError("Could not reach server to lock shift ledger.");
     } finally {
       setIsSubmitting(false);
     }
@@ -161,6 +167,12 @@ export default function CaretakerShiftHandover() {
           <Lock className="w-4 h-4" />
           {isSubmitting ? "Reconciling..." : "Submit Shift Handover & Lock Ledger"}
         </button>
+
+        {submitError && (
+          <div className="p-3 rounded-xl bg-red-950/40 border border-red-500/40 text-red-300 text-xs">
+            {submitError}
+          </div>
+        )}
 
         {shiftCompleted && (
           <div className="p-3.5 rounded-xl bg-emerald-950/50 border border-neon-green/40 text-neon-green text-xs space-y-2 animate-in zoom-in-95">

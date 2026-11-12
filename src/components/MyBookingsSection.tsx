@@ -64,9 +64,13 @@ export default function MyBookingsSection() {
 
   useEffect(() => {
     fetchBookings();
-    // Refresh periodically so check-in status syncs
+    const onUpdated = () => fetchBookings();
+    window.addEventListener("kfc:bookings-updated", onUpdated);
     const timer = setInterval(fetchBookings, 15000);
-    return () => clearInterval(timer);
+    return () => {
+      window.removeEventListener("kfc:bookings-updated", onUpdated);
+      clearInterval(timer);
+    };
   }, []);
 
   const handleSendReminder = async (booking: BookingRecord) => {
@@ -76,24 +80,27 @@ export default function MyBookingsSection() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          phone: booking.captainPhone,
+          bookingId: booking.id,
+          captainName: booking.captainName,
+          captainPhone: booking.captainPhone,
           venueName: booking.venueName || "Kamil FC Arena",
           pitchName: booking.pitchName,
           slotTime: booking.slotTime,
           pinCode: booking.pinCode,
+          remainingAmount: booking.cashDue,
         }),
       });
       const data = await res.json();
-      if (data.success) {
+      if (res.ok && data.success) {
         setReminderStatus((prev) => ({ ...prev, [booking.id]: "WhatsApp Sent!" }));
         setTimeout(() => {
           setReminderStatus((prev) => ({ ...prev, [booking.id]: "" }));
         }, 3500);
       } else {
-        setReminderStatus((prev) => ({ ...prev, [booking.id]: "Error" }));
+        setReminderStatus((prev) => ({ ...prev, [booking.id]: "Failed" }));
       }
     } catch {
-      setReminderStatus((prev) => ({ ...prev, [booking.id]: "Error" }));
+      setReminderStatus((prev) => ({ ...prev, [booking.id]: "Failed" }));
     }
   };
 
@@ -155,7 +162,7 @@ export default function MyBookingsSection() {
               placeholder="Find booking by WhatsApp phone (e.g. 0324...) or 4-digit PIN..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#070D0A] border border-[#17261E] text-white text-xs placeholder-gray-500 focus:outline-none focus:border-[#00E575]"
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#090D10] border border-[#17261E] text-white text-xs placeholder-gray-500 focus:outline-none focus:border-[#00E575]"
             />
           </div>
           {searchQuery && (
@@ -223,7 +230,7 @@ export default function MyBookingsSection() {
                     </h3>
                     <p className="text-xs text-gray-300 flex items-center gap-1 mt-0.5">
                       <MapPin className="w-3.5 h-3.5 text-[#00E575] shrink-0" />
-                      <span>{b.venueName || "Kamil FC Mega Sports Complex"}</span>
+                      <span>{b.venueName || "POPO FC Ground (F-11/2)"}</span>
                     </p>
                   </div>
 
@@ -240,7 +247,7 @@ export default function MyBookingsSection() {
                   </div>
 
                   {/* High Contrast Scoreboard PIN Box */}
-                  <div className="bg-[#070D0A] p-3.5 rounded-xl border border-[#1E3A2B] text-center space-y-1">
+                  <div className="bg-[#090D10] p-3.5 rounded-xl border border-[#1E3A2B] text-center space-y-1">
                     <span className="text-[10px] font-mono font-bold text-gray-400 uppercase tracking-wider">
                       Caretaker Check-In PIN
                     </span>

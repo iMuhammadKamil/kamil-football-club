@@ -5,10 +5,12 @@
 :root {
   --pitch-obsidian: #090d10;
   --turf-surface: #0d1914;
-  --stadium-border: #1b2a22;
+  --stadium-border: #17261e;
   --floodlight-white: #f8fafc;
+  --pitch-teal: #00c2a1;
   --pitch-green: #00e575;
   --stadium-amber: #ffb300;
+  --alert-orange: #e94a10;
 }
 
 body {
@@ -19,12 +21,20 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Subtle stadium night atmosphere */
+/* Stadium-night pitch atmosphere with subtle Futbalr pitch-teal & floodlight glow */
 .stadium-mesh-bg {
-  background-image: 
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 229, 117, 0.08), transparent 70%),
-    radial-gradient(circle at 100% 30%, rgba(255, 179, 0, 0.04), transparent 50%),
-    linear-gradient(to bottom, #090d10, #0a110e);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 194, 161, 0.12), transparent 70%),
+    radial-gradient(circle at 90% 25%, rgba(0, 229, 117, 0.06), transparent 50%),
+    linear-gradient(to bottom, #090d10, #0b1410);
+}
+
+/* Tactical pitch markings pattern */
+.pitch-lines-bg {
+  background-image:
+    linear-gradient(to right, rgba(0, 194, 161, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 194, 161, 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
 }
 
 /* Authentic stadium ticket perforation */

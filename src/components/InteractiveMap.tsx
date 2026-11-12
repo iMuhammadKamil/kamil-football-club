@@ -51,23 +51,24 @@ export default function InteractiveMap({ venues, onSelectVenue }: InteractiveMap
   const [selectedMapTheme, setSelectedMapTheme] = useState<"darkCanvas" | "osm" | "satellite">("darkCanvas");
 
   useEffect(() => {
-    if (!mapContainerRef.current) return;
+    const container = mapContainerRef.current;
+    if (!container) return;
 
     let isMounted = true;
 
-    if ((mapContainerRef.current as any)._leaflet_id) {
-      (mapContainerRef.current as any)._leaflet_id = null;
+    if ((container as any)._leaflet_id) {
+      (container as any)._leaflet_id = null;
     }
 
     import("leaflet").then((L) => {
-      if (!isMounted || !mapContainerRef.current) return;
+      if (!isMounted || !container) return;
 
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
 
-      const map = L.map(mapContainerRef.current).setView([30.3753, 69.3451], 5);
+      const map = L.map(container).setView([30.3753, 69.3451], 5);
       mapInstanceRef.current = map;
 
       // Check if user provided an optional custom Carto API key in .env
@@ -95,7 +96,7 @@ export default function InteractiveMap({ venues, onSelectVenue }: InteractiveMap
           className: "custom-neon-marker",
           html: `
             <div style="
-              background: ${is11Side ? "#00FF87" : "#00E5FF"};
+              background: ${is11Side ? "#00E575" : "#00C2A1"};
               width: 32px;
               height: 32px;
               border-radius: 50% 50% 50% 0;
@@ -103,14 +104,14 @@ export default function InteractiveMap({ venues, onSelectVenue }: InteractiveMap
               display: flex;
               align-items: center;
               justify-content: center;
-              box-shadow: 0 0 18px ${is11Side ? "rgba(0, 255, 135, 0.85)" : "rgba(0, 229, 255, 0.85)"};
-              border: 2px solid #070A0F;
+              box-shadow: 0 0 18px ${is11Side ? "rgba(0, 229, 117, 0.85)" : "rgba(0, 194, 161, 0.85)"};
+              border: 2px solid #090D10;
               cursor: pointer;
             ">
               <div style="
                 width: 10px;
                 height: 10px;
-                background: #070A0F;
+                background: #090D10;
                 border-radius: 50%;
                 transform: rotate(45deg);
               "></div>
@@ -141,8 +142,8 @@ export default function InteractiveMap({ venues, onSelectVenue }: InteractiveMap
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
-      if (mapContainerRef.current) {
-        (mapContainerRef.current as any)._leaflet_id = null;
+      if (container) {
+        (container as any)._leaflet_id = null;
       }
     };
   }, [venues, selectedMapTheme]);
@@ -162,19 +163,19 @@ export default function InteractiveMap({ venues, onSelectVenue }: InteractiveMap
   };
 
   return (
-    <div className="relative rounded-2xl overflow-hidden border border-dark-border shadow-2xl h-[440px] w-full bg-[#070A0F]">
+    <div className="relative rounded-2xl overflow-hidden border border-dark-border shadow-2xl h-[440px] w-full bg-[#090D10]">
       <div ref={mapContainerRef} className="h-full w-full z-10" />
 
       {/* Map Header Overlay & City Quick Jumps */}
       <div className="absolute top-3 left-3 right-3 z-20 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
         <div className="flex items-center gap-2 pointer-events-auto">
-          <div className="px-3 py-1.5 rounded-xl bg-[#070A0F]/90 backdrop-blur-md border border-dark-border text-xs text-white font-medium flex items-center gap-2 shadow-lg">
+          <div className="px-3 py-1.5 rounded-xl bg-[#090D10]/90 backdrop-blur-md border border-dark-border text-xs text-white font-medium flex items-center gap-2 shadow-lg">
             <Navigation className="w-3.5 h-3.5 text-neon-green" />
             <span>Pakistan Sports Radar</span>
           </div>
 
           {/* Theme switcher: Dark Canvas vs Satellite vs OSM */}
-          <div className="hidden sm:flex items-center bg-[#070A0F]/90 backdrop-blur-md p-1 rounded-xl border border-dark-border text-[10px] text-gray-300">
+          <div className="hidden sm:flex items-center bg-[#090D10]/90 backdrop-blur-md p-1 rounded-xl border border-dark-border text-[10px] text-gray-300">
             <button
               onClick={() => setSelectedMapTheme("darkCanvas")}
               className={`px-2 py-0.5 rounded-lg font-bold transition-all ${
@@ -203,7 +204,7 @@ export default function InteractiveMap({ venues, onSelectVenue }: InteractiveMap
         </div>
 
         {/* City Focus Buttons */}
-        <div className="flex items-center gap-1.5 bg-[#070A0F]/90 backdrop-blur-md p-1 rounded-xl border border-dark-border shadow-lg pointer-events-auto">
+        <div className="flex items-center gap-1.5 bg-[#090D10]/90 backdrop-blur-md p-1 rounded-xl border border-dark-border shadow-lg pointer-events-auto">
           {["ALL", "Karachi", "Lahore", "Islamabad", "Rawalpindi"].map((city) => (
             <button
               key={city}
@@ -222,7 +223,7 @@ export default function InteractiveMap({ venues, onSelectVenue }: InteractiveMap
 
       {/* Selected Venue Floating Quick-Card */}
       {activeVenue && (
-        <div className="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:max-w-xs z-20 bg-[#0D131F]/95 backdrop-blur-md border border-neon-green/60 p-4 rounded-xl shadow-2xl animate-in slide-in-from-bottom-2">
+        <div className="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:max-w-xs z-20 bg-[#0C1611]/95 backdrop-blur-md border border-neon-green/60 p-4 rounded-xl shadow-2xl animate-in slide-in-from-bottom-2">
           <div className="flex items-center justify-between text-[10px] text-neon-green font-bold uppercase tracking-wider">
             <span>{activeVenue.city} • {activeVenue.area}</span>
             <button

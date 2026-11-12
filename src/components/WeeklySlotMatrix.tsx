@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
-import { Clock, Calendar, Flame, AlertCircle, ChevronRight, Zap } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Clock, Flame } from "lucide-react";
 import { GroundVenue, Pitch, TimeSlot } from "@/types";
 import { formatPKR } from "@/lib/utils";
-import { generateDaySlots, LINKED_PITCH_MAP } from "@/lib/slotEngine";
+import { generateDaySlots } from "@/lib/slotEngine";
 
 interface WeeklySlotMatrixProps {
   venue: GroundVenue;
@@ -13,6 +13,26 @@ interface WeeklySlotMatrixProps {
 
 export default function WeeklySlotMatrix({ venue, onSlotSelected }: WeeklySlotMatrixProps) {
   const [selectedPitch, setSelectedPitch] = useState<Pitch>(venue.pitches[0]);
+  const [serverBookings, setServerBookings] = useState<any[]>([]);
+  const [serverLocks, setServerLocks] = useState<{ slotId: string; status: string }[]>([]);
+
+  const syncLiveAvailability = async () => {
+    try {
+      const [bRes, lRes] = await Promise.all([fetch("/api/bookings"), fetch("/api/slots/lock")]);
+      const bData = await bRes.json();
+      const lData = await lRes.json();
+      if (bData.bookings) setServerBookings(bData.bookings);
+      if (lData.locks) setServerLocks(lData.locks);
+    } catch {
+      // keep generated defaults on network hiccup
+    }
+  };
+
+  useEffect(() => {
+    syncLiveAvailability();
+    window.addEventListener("kfc:bookings-updated", syncLiveAvailability);
+    return () => window.removeEventListener("kfc:bookings-updated", syncLiveAvailability);
+  }, []);
 
   // Generate 7 upcoming dates
   const next7Days = Array.from({ length: 7 }, (_, i) => {
@@ -30,8 +50,24 @@ export default function WeeklySlotMatrix({ venue, onSlotSelected }: WeeklySlotMa
 
   const [activeDateStr, setActiveDateStr] = useState<string>(next7Days[0].dateStr);
 
-  // Generate slots for selected pitch and date
-  const slots = generateDaySlots(selectedPitch.id, activeDateStr, selectedPitch.pricePerHour);
+  // Merge generated slots with live bookings & 10-min holds
+  const slots = generateDaySlots(selectedPitch.id, activeDateStr, selectedPitch.pricePerHour).map(
+    (slot) => {
+      const isBookedOnServer = serverBookings.some(
+        (b) =>
+          b.groundId === venue.id &&
+          b.pitchName === selectedPitch.name &&
+          b.slotDate === activeDateStr &&
+          b.slotTime?.startsWith(slot.startTime)
+      );
+      const isLockedOnServer = serverLocks.some((l) => l.slotId === slot.id);
+      if (isBookedOnServer) return { ...slot, status: "BOOKED" as const };
+      if (isLockedOnServer && slot.status === "AVAILABLE") {
+        return { ...slot, status: "HOLD_LOCKED" as const };
+      }
+      return slot;
+    }
+  );
 
   return (
     <div className="bg-dark-card border border-dark-border rounded-2xl p-5 space-y-5 shadow-xl">
