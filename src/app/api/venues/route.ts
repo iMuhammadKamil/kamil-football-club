@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
         (v) =>
           v.name.toLowerCase().includes(query) ||
           v.area.toLowerCase().includes(query) ||
+          v.city.toLowerCase().includes(query) ||
           v.pitches.some((p) => p.name.toLowerCase().includes(query))
       );
     }

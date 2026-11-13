@@ -28,6 +28,14 @@ const config: Config = {
           amber: "#FFB300",
           alert: "#E94A10",
         },
+        club: {
+          forest: "#176B3A",
+          evergreen: "#0E2A20",
+          gold: "#C8A838",
+          mist: "#E6E7E5",
+          canvas: "#F4F5F3",
+          muted: "#5C6B64",
+        },
         neon: {
           green: "#00E575",
           cyan: "#00C2A1",
@@ -44,7 +52,7 @@ const config: Config = {
         "neon-yellow": "0 0 20px -3px rgba(255, 179, 0, 0.35)",
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "sans-serif"],
+        sans: ["var(--font-jakarta)", "var(--font-inter)", "sans-serif"],
         display: ["var(--font-outfit)", "sans-serif"],
       },
     },

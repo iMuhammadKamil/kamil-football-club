@@ -2,24 +2,20 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { 
-  Calendar, 
-  Clock, 
-  MapPin, 
-  Key, 
-  Share2, 
-  CheckCircle2, 
-  AlertCircle, 
-  Search, 
-  MessageCircle, 
-  Bell, 
-  ExternalLink,
+import {
+  CalendarCheck,
+  Clock,
+  MapPin,
+  ShareNetwork,
+  CheckCircle,
+  MagnifyingGlass,
+  Bell,
   ShieldCheck,
-  RefreshCw,
-  Sparkles,
-  ChevronRight
-} from "lucide-react";
+  ArrowsClockwise,
+  CaretRight,
+} from "@phosphor-icons/react";
 import { formatPKR } from "@/lib/utils";
+import { Card, Badge, Input, EmptyState } from "@/components/ui";
 
 interface BookingRecord {
   id: string;
@@ -120,17 +116,17 @@ export default function MyBookingsSection() {
   return (
     <section id="my-bookings" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 pt-4">
       {/* Header and Lookup Search Bar */}
-      <div className="bg-[#0A130F] border border-[#17261E] rounded-2xl p-5 sm:p-6 shadow-xl relative overflow-hidden">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#17261E] pb-5">
+      <Card className="p-5 sm:p-6 relative overflow-hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E6E7E5] pb-5">
           <div>
-            <div className="flex items-center gap-2 text-[#00E575] text-xs font-bold">
-              <Calendar className="w-4 h-4" />
-              <span>Matchday Passes & Active Slots</span>
+            <div className="flex items-center gap-2 text-[#176B3A] text-xs font-bold uppercase tracking-wider">
+              <CalendarCheck className="w-4 h-4" weight="duotone" />
+              <span>Matchday Passes &amp; Active Slots</span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-extrabold text-white font-display mt-0.5">
-              Your Booked Slots & Passes
+            <h2 className="text-xl sm:text-2xl font-extrabold text-[#0E2A20] font-display mt-0.5">
+              Your Booked Slots &amp; Passes
             </h2>
-            <p className="text-xs text-gray-400 mt-1 max-w-xl">
+            <p className="text-xs text-[#5C6B64] mt-1 max-w-xl">
               Instant access to your 4-digit caretaker check-in PIN, match timings, remaining cash balance, and WhatsApp Squad Pay bill generator.
             </p>
           </div>
@@ -138,16 +134,16 @@ export default function MyBookingsSection() {
           <div className="flex items-center gap-2">
             <button
               onClick={fetchBookings}
-              className="px-3 py-2 rounded-xl bg-[#0F1D16] hover:bg-[#14291F] text-gray-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-all border border-[#1E3527]"
+              className="px-3 py-2 rounded-xl bg-[#F4F5F3] hover:bg-[#EAEDEA] text-[#0E2A20] text-xs font-semibold flex items-center gap-1.5 transition-all border border-[#E6E7E5] cursor-pointer"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
+              <ArrowsClockwise className={`w-4 h-4 text-[#176B3A] ${loading ? "animate-spin" : ""}`} weight="duotone" />
               Sync Passes
             </button>
             <Link
               href="/caretaker"
-              className="px-3.5 py-2 rounded-xl bg-[#12231A] border border-[#1E3A2B] text-[#00E575] hover:bg-[#00E575] hover:text-[#090D10] text-xs font-bold flex items-center gap-1.5 transition-all"
+              className="px-3.5 py-2 rounded-xl bg-[#0E2A20] text-[#C8A838] hover:bg-[#143B2D] text-xs font-display font-bold flex items-center gap-1.5 transition-all"
             >
-              <ShieldCheck className="w-3.5 h-3.5" />
+              <ShieldCheck className="w-4 h-4" weight="duotone" />
               Field PIN Screen
             </Link>
           </div>
@@ -156,28 +152,28 @@ export default function MyBookingsSection() {
         {/* Quick Phone or PIN Search Filter */}
         <div className="mt-4 flex flex-col sm:flex-row items-center gap-3">
           <div className="relative flex-1 w-full">
-            <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
+            <MagnifyingGlass className="w-4 h-4 text-[#5C6B64] absolute left-3.5 top-1/2 -translate-y-1/2" weight="duotone" />
+            <Input
               type="text"
               placeholder="Find booking by WhatsApp phone (e.g. 0324...) or 4-digit PIN..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#090D10] border border-[#17261E] text-white text-xs placeholder-gray-500 focus:outline-none focus:border-[#00E575]"
+              className="pl-10"
             />
           </div>
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="text-xs text-gray-400 hover:text-white px-2 py-1"
+              className="text-xs text-[#5C6B64] hover:text-[#0E2A20] px-2 py-1 font-semibold cursor-pointer"
             >
               Clear
             </button>
           )}
-          <div className="text-[11px] text-gray-400 shrink-0">
-            Active Passes: <strong className="text-white font-mono">{filteredBookings.length}</strong>
+          <div className="text-[11px] text-[#5C6B64] shrink-0">
+            Active Passes: <strong className="text-[#0E2A20] font-display">{filteredBookings.length}</strong>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Bookings List Cards */}
       {filteredBookings.length > 0 ? (
@@ -187,97 +183,92 @@ export default function MyBookingsSection() {
             const reminderTxt = reminderStatus[b.id];
 
             return (
-              <div
+              <Card
                 key={b.id}
-                className="bg-[#0C1611] border border-[#17261E] hover:border-[#00E575]/50 rounded-2xl p-5 space-y-4 shadow-lg transition-all flex flex-col justify-between relative overflow-hidden group"
+                interactive
+                className="p-5 space-y-4 flex flex-col justify-between relative overflow-hidden group"
               >
                 {/* Status Indicator */}
                 <div
                   className={`absolute top-0 left-0 right-0 h-1 ${
-                    isCheckedIn ? "bg-[#00E575]" : "bg-amber-400"
+                    isCheckedIn ? "bg-[#176B3A]" : "bg-[#C8A838]"
                   }`}
                 />
 
                 <div className="space-y-3">
                   {/* Top Bar: Status & Booking ID */}
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-gray-400">
+                    <span className="text-[10px] font-mono text-[#5C6B64]">
                       PASS #{b.id}
                     </span>
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold flex items-center gap-1 ${
-                        isCheckedIn
-                          ? "bg-[#00E575]/20 text-[#00E575] border border-[#00E575]/40"
-                          : "bg-amber-500/20 text-amber-300 border border-amber-500/40"
-                      }`}
-                    >
+                    <Badge tone={isCheckedIn ? "forest" : "gold"}>
                       {isCheckedIn ? (
                         <>
-                          <CheckCircle2 className="w-3 h-3" /> PITCH ACCESS UNLOCKED
+                          <CheckCircle className="w-3.5 h-3.5" weight="duotone" /> PITCH UNLOCKED
                         </>
                       ) : (
                         <>
-                          <Clock className="w-3 h-3" /> SLOT CONFIRMED
+                          <Clock className="w-3.5 h-3.5" weight="duotone" /> SLOT CONFIRMED
                         </>
                       )}
-                    </span>
+                    </Badge>
                   </div>
 
                   {/* Pitch and Venue */}
                   <div>
-                    <h3 className="text-base font-bold text-white font-display group-hover:text-[#00E575] transition-colors">
+                    <h3 className="text-base font-bold text-[#0E2A20] font-display group-hover:text-[#176B3A] transition-colors">
                       {b.pitchName}
                     </h3>
-                    <p className="text-xs text-gray-300 flex items-center gap-1 mt-0.5">
-                      <MapPin className="w-3.5 h-3.5 text-[#00E575] shrink-0" />
+                    <p className="text-xs text-[#5C6B64] flex items-center gap-1 mt-0.5">
+                      <MapPin className="w-3.5 h-3.5 text-[#176B3A] shrink-0" weight="duotone" />
                       <span>{b.venueName || "POPO FC Ground (F-11/2)"}</span>
                     </p>
                   </div>
 
                   {/* Timing Pill */}
-                  <div className="bg-[#08100C] p-2.5 rounded-xl border border-[#17261E] flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2 text-white">
-                      <Calendar className="w-4 h-4 text-gray-400" />
+                  <div className="bg-[#F4F5F3] p-2.5 rounded-xl border border-[#E6E7E5] flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2 text-[#0E2A20] font-medium">
+                      <CalendarCheck className="w-4 h-4 text-[#5C6B64]" weight="duotone" />
                       <span>{b.slotDate}</span>
                     </div>
-                    <div className="flex items-center gap-1.5 font-bold text-[#00E575]">
-                      <Clock className="w-3.5 h-3.5" />
+                    <div className="flex items-center gap-1.5 font-display font-bold text-[#176B3A]">
+                      <Clock className="w-3.5 h-3.5" weight="duotone" />
                       <span>{b.slotTime}</span>
                     </div>
                   </div>
 
                   {/* High Contrast Scoreboard PIN Box */}
-                  <div className="bg-[#090D10] p-3.5 rounded-xl border border-[#1E3A2B] text-center space-y-1">
-                    <span className="text-[10px] font-mono font-bold text-gray-400 uppercase tracking-wider">
+                  <div className="bg-[#0E2A20] p-3.5 rounded-xl border border-[#176B3A]/40 text-center space-y-1">
+                    <span className="text-[10px] font-mono font-bold text-[#C8A838] uppercase tracking-wider">
                       Caretaker Check-In PIN
                     </span>
-                    <div className="text-3xl font-mono font-black tracking-widest text-[#00E575]">
+                    <div className="text-3xl font-mono font-black tracking-widest text-white">
                       {b.pinCode}
                     </div>
-                    <p className="text-[10px] text-gray-400">
+                    <p className="text-[10px] text-white/70">
                       Show this 4-digit code to ground attendant at pitch
                     </p>
                   </div>
 
                   {/* Financials Breakdown */}
-                  <div className="space-y-1 pt-1 text-xs text-gray-300">
+                  <div className="space-y-1 pt-1 text-xs text-[#5C6B64]">
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Captain:</span>
-                      <span className="font-semibold text-white">
+                      <span>Captain:</span>
+                      <span className="font-semibold text-[#0E2A20]">
                         {b.captainName} ({b.captainPhone})
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Total Price:</span>
-                      <strong className="text-[#00E575]">{formatPKR(b.totalAmount)}</strong>
+                      <span>Total Price:</span>
+                      <strong className="text-[#176B3A] font-display">{formatPKR(b.totalAmount)}</strong>
                     </div>
                     {b.cashDue > 0 ? (
-                      <div className="flex justify-between text-amber-300 font-bold">
+                      <div className="flex justify-between text-[#B69422] font-bold">
                         <span>Cash Due at Pitch:</span>
                         <span>{formatPKR(b.cashDue)}</span>
                       </div>
                     ) : (
-                      <div className="flex justify-between text-[#00E575] font-semibold">
+                      <div className="flex justify-between text-[#176B3A] font-semibold">
                         <span>Payment:</span>
                         <span>Paid in Full</span>
                       </div>
@@ -286,7 +277,7 @@ export default function MyBookingsSection() {
                 </div>
 
                 {/* Card Action Buttons */}
-                <div className="pt-3 border-t border-[#17261E] space-y-2">
+                <div className="pt-3 border-t border-[#E6E7E5] space-y-2">
                   <div className="grid grid-cols-2 gap-2">
                     {/* Share WhatsApp Squad Bill */}
                     <a
@@ -302,9 +293,9 @@ export default function MyBookingsSection() {
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="py-2 px-2 rounded-xl bg-[#12231A] hover:bg-[#00E575] hover:text-[#090D10] text-[#00E575] border border-[#1E3A2B] text-[11px] font-bold flex items-center justify-center gap-1 transition-all"
+                      className="py-2 px-2 rounded-xl bg-[#176B3A]/10 hover:bg-[#176B3A] hover:text-white text-[#176B3A] border border-[#176B3A]/20 text-[11px] font-bold flex items-center justify-center gap-1 transition-all"
                     >
-                      <Share2 className="w-3.5 h-3.5" />
+                      <ShareNetwork className="w-3.5 h-3.5" weight="duotone" />
                       <span>Squad Share</span>
                     </a>
 
@@ -312,9 +303,9 @@ export default function MyBookingsSection() {
                     <button
                       onClick={() => handleSendReminder(b)}
                       disabled={!!reminderTxt}
-                      className="py-2 px-2 rounded-xl bg-[#0F1D16] hover:bg-[#152B1F] text-white text-[11px] font-semibold border border-[#17261E] flex items-center justify-center gap-1 transition-all"
+                      className="py-2 px-2 rounded-xl bg-[#F4F5F3] hover:bg-[#EAEDEA] text-[#0E2A20] text-[11px] font-semibold border border-[#E6E7E5] flex items-center justify-center gap-1 transition-all cursor-pointer"
                     >
-                      <Bell className="w-3.5 h-3.5 text-amber-400" />
+                      <Bell className="w-3.5 h-3.5 text-[#C8A838]" weight="duotone" />
                       <span>{reminderTxt || "Send Alert"}</span>
                     </button>
                   </div>
@@ -322,33 +313,32 @@ export default function MyBookingsSection() {
                   {/* Verify PIN Direct Quick Test */}
                   <Link
                     href={`/caretaker`}
-                    className="w-full py-2 rounded-xl bg-[#08100C] border border-[#17261E] hover:border-[#00E575]/40 text-gray-300 hover:text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
+                    className="w-full py-2 rounded-xl bg-[#F4F5F3] border border-[#E6E7E5] hover:border-[#176B3A]/40 text-[#0E2A20] text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
                   >
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#00E575]" />
+                    <ShieldCheck className="w-4 h-4 text-[#176B3A]" weight="duotone" />
                     <span>Open Field Caretaker PIN Keypad</span>
-                    <ChevronRight className="w-3 h-3" />
+                    <CaretRight className="w-3.5 h-3.5 text-[#5C6B64]" weight="bold" />
                   </Link>
                 </div>
-              </div>
+              </Card>
             );
           })}
         </div>
       ) : (
-        <div className="bg-[#0A130F] border border-[#17261E] rounded-2xl p-8 sm:p-12 text-center space-y-3">
-          <Calendar className="w-10 h-10 text-gray-500 mx-auto" />
-          <h3 className="text-base font-bold text-white">No Booked Slots Found</h3>
-          <p className="text-xs text-gray-400 max-w-sm mx-auto">
-            {searchQuery
+        <EmptyState
+          illustration="ticket"
+          title="No Booked Slots Found"
+          description={
+            searchQuery
               ? `No booking matching "${searchQuery}". Please check the phone number or 4-digit PIN.`
-              : "No matches booked yet. Explore available grounds below to lock your floodlit slot."}
-          </p>
-          <a
-            href="#venues"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#00E575] text-[#090D10] text-xs font-extrabold mt-2 transition-all shadow-md active:scale-95"
-          >
-            Explore Arenas & Book a Slot
-          </a>
-        </div>
+              : "No matches booked yet. Explore available grounds below to lock your floodlit slot."
+          }
+          actionLabel="Explore Arenas & Book a Slot"
+          onAction={() => {
+            const el = document.getElementById("venues");
+            if (el) el.scrollIntoView({ behavior: "smooth" });
+          }}
+        />
       )}
     </section>
   );

@@ -2,31 +2,31 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { 
-  ShieldCheck, 
-  CheckCircle2, 
-  AlertCircle, 
-  ArrowLeft, 
-  Phone, 
-  Clock, 
-  MapPin, 
-  Banknote,
-  Search,
+import {
+  ShieldCheck,
+  CheckCircle as CheckCircle2,
+  WarningCircle as AlertCircle,
+  ArrowLeft,
+  Phone,
+  Clock,
+  MapPin,
+  Money as Banknote,
+  MagnifyingGlass as Search,
   Lock,
   PlusCircle,
   Users,
-  Zap,
+  Lightning as Zap,
   FileText,
   X,
   CloudRain,
-  ShieldAlert,
+  ShieldWarning as ShieldAlert,
   Plus,
-  Send,
+  PaperPlaneTilt as Send,
   Trophy,
-  Award,
+  Medal as Award,
   Bell,
-  RefreshCw
-} from "lucide-react";
+  ArrowsClockwise as RefreshCw,
+} from "@phosphor-icons/react";
 import { formatPKR } from "@/lib/utils";
 
 interface StoredBookingItem {

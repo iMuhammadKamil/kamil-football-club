@@ -5,14 +5,15 @@ import Link from "next/link";
 import {
   MapPin,
   Star,
-  Calendar,
-  ChevronRight,
-  Flame,
-  ExternalLink,
-} from "lucide-react";
+  CalendarCheck as Calendar,
+  CaretRight as ChevronRight,
+  Fire as Flame,
+  ArrowSquareOut as ExternalLink,
+} from "@phosphor-icons/react";
 import { GroundVenue, SportType } from "@/types";
 import { formatPKR } from "@/lib/utils";
 import { getVenueDisplayImage, SPORT_IMAGES } from "@/data/mockVenues";
+import { Card, Button } from "@/components/ui";
 
 interface GroundCardProps {
   venue: GroundVenue;
@@ -24,25 +25,25 @@ interface GroundCardProps {
 export function getSportBadge(sportType: SportType) {
   switch (sportType) {
     case "FOOTBALL_11A_SIDE":
-      return { label: "11-a-Side", bg: "bg-[#00C2A1]/15 text-[#00C2A1] border-[#00C2A1]/35" };
+      return { label: "11-a-Side", bg: "bg-[#176B3A]/10 text-[#176B3A] border-[#176B3A]/20" };
     case "FOOTBALL_7A_SIDE":
-      return { label: "7-a-Side", bg: "bg-[#00E575]/15 text-[#00E575] border-[#00E575]/35" };
+      return { label: "7-a-Side", bg: "bg-[#176B3A]/10 text-[#176B3A] border-[#176B3A]/20" };
     case "FOOTBALL_5A_SIDE":
-      return { label: "5-a-Side", bg: "bg-teal-500/15 text-teal-300 border-teal-500/35" };
+      return { label: "5-a-Side", bg: "bg-[#0E2A20]/10 text-[#0E2A20] border-[#0E2A20]/20" };
     case "PADEL":
-      return { label: "Padel Court", bg: "bg-[#FFB300]/15 text-[#FFB300] border-[#FFB300]/35" };
+      return { label: "Padel Court", bg: "bg-[#C8A838]/20 text-[#8D7216] border-[#C8A838]/35" };
     case "CRICKET_TAPEBALL":
-      return { label: "Tape-ball", bg: "bg-[#E94A10]/15 text-[#FF7A4D] border-[#E94A10]/35" };
+      return { label: "Tape-ball", bg: "bg-[#E94A10]/10 text-[#E94A10] border-[#E94A10]/25" };
     case "CRICKET_HARDBALL":
-      return { label: "Hard-ball", bg: "bg-red-500/15 text-red-300 border-red-500/35" };
+      return { label: "Hard-ball", bg: "bg-red-50 text-red-700 border-red-200" };
     case "BADMINTON":
-      return { label: "Badminton", bg: "bg-cyan-500/15 text-cyan-300 border-cyan-500/35" };
+      return { label: "Badminton", bg: "bg-emerald-50 text-emerald-800 border-emerald-200" };
     case "TABLE_TENNIS":
-      return { label: "Table Tennis", bg: "bg-sky-500/15 text-sky-300 border-sky-500/35" };
+      return { label: "Table Tennis", bg: "bg-amber-50 text-amber-800 border-amber-200" };
     case "RUNNING_TRACK":
-      return { label: "Track", bg: "bg-purple-500/15 text-purple-300 border-purple-500/35" };
+      return { label: "Track", bg: "bg-slate-100 text-slate-700 border-slate-200" };
     default:
-      return { label: "Turf", bg: "bg-gray-500/15 text-gray-300 border-gray-500/35" };
+      return { label: "Turf", bg: "bg-[#F4F5F3] text-[#5C6B64] border-[#E6E7E5]" };
   }
 }
 
@@ -54,37 +55,44 @@ export default function GroundCard({
 }: GroundCardProps) {
   const lowestPrice = Math.min(...venue.pitches.map((p) => p.pricePerHour));
   const has11aSide = venue.pitches.some((p) => p.sportType === "FOOTBALL_11A_SIDE");
-  const visiblePitches = venue.pitches.slice(0, 3);
+  const visiblePitches = venue.pitches.slice(0, 2);
   const extraPitchCount = venue.pitches.length - visiblePitches.length;
   const displayImg = getVenueDisplayImage(venue, selectedSport);
   const fallbackImg = SPORT_IMAGES[venue.pitches[0]?.sportType || "FOOTBALL_11A_SIDE"];
 
+  const rushInfo =
+    venue.reviewCount >= 150
+      ? { label: "Peak Rush", cls: "bg-[#E94A10] text-white" }
+      : venue.reviewCount >= 90
+        ? { label: "Filling Fast", cls: "bg-[#C8A838] text-[#0E2A20]" }
+        : { label: "Open Now", cls: "bg-white/95 text-[#176B3A] border border-[#E6E7E5]" };
+
   return (
-    <article className="group relative rounded-2xl bg-[#0C1611] border border-[#17261E] hover:border-[#00C2A1]/60 transition-all duration-300 overflow-hidden flex flex-col shadow-lg">
+    <Card interactive className="group relative overflow-hidden flex flex-col">
       {/* Top Status & Rating Pills */}
       <div className="absolute top-3 left-3 right-3 z-10 flex items-center justify-between gap-2 pointer-events-none">
-        {has11aSide ? (
-          <span className="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#00C2A1] text-[#090D10] shadow-md flex items-center gap-1">
-            <Flame className="w-3 h-3 fill-current" />
-            11v11 Stadium
+        <div className="flex items-center gap-1.5">
+          {has11aSide && (
+            <span className="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#0E2A20] text-[#C8A838] shadow-sm flex items-center gap-1">
+              <Flame className="w-3 h-3" weight="fill" />
+              11v11
+            </span>
+          )}
+          <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider shadow-sm ${rushInfo.cls}`}>
+            {rushInfo.label}
           </span>
-        ) : (
-          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#090D10]/85 backdrop-blur-md text-[#00E575] border border-[#1E3A2B]">
-            Floodlit Arena
-          </span>
-        )}
+        </div>
 
-        <div className="px-2.5 py-1 rounded-full bg-[#090D10]/85 backdrop-blur-md border border-[#17261E] text-xs font-bold text-white flex items-center gap-1">
-          <Star className="w-3 h-3 text-[#FFB300] fill-[#FFB300]" />
+        <div className="px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-sm border border-[#E6E7E5] text-xs font-bold text-[#0E2A20] flex items-center gap-1 shadow-sm">
+          <Star className="w-3.5 h-3.5 text-[#C8A838]" weight="fill" />
           <span>{venue.rating}</span>
-          <span className="text-gray-400 text-[10px] font-normal">({venue.reviewCount})</span>
         </div>
       </div>
 
       {/* Venue Photo Header */}
       <Link
         href={`/venue/${venue.slug}`}
-        className="relative h-48 sm:h-52 w-full overflow-hidden bg-[#090D10] block"
+        className="relative h-44 w-full overflow-hidden bg-[#E6E7E5] block"
       >
         <img
           src={displayImg}
@@ -95,39 +103,36 @@ export default function GroundCard({
             (e.target as HTMLImageElement).src = fallbackImg;
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0C1611] via-[#0C1611]/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0E2A20]/70 via-transparent to-transparent" />
 
         {/* Bottom-left Location + Distance Pill */}
-        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2 text-xs text-gray-200">
-          <div className="flex items-center gap-1.5 font-medium truncate bg-[#090D10]/70 backdrop-blur-sm px-2.5 py-1 rounded-full border border-[#17261E]/80">
-            <MapPin className="w-3.5 h-3.5 text-[#00C2A1] shrink-0" />
+        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-1.5 font-semibold truncate bg-white/95 text-[#0E2A20] px-2.5 py-1 rounded-full shadow-sm">
+            <MapPin className="w-3.5 h-3.5 text-[#176B3A] shrink-0" weight="duotone" />
             <span className="truncate">
               {venue.area}, {venue.city}
             </span>
           </div>
           {userDistanceKm !== undefined && (
-            <span className="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-[#00C2A1]/20 text-[#00C2A1] border border-[#00C2A1]/40 shrink-0">
+            <span className="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-[#C8A838] text-[#0E2A20] shrink-0 shadow-sm">
               {userDistanceKm} km
             </span>
           )}
         </div>
       </Link>
 
-      {/* Card Body */}
-      <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-4">
+      {/* Card Body — Minimal Text, Instant Action */}
+      <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
         <div>
           <Link href={`/venue/${venue.slug}`} className="block">
-            <h3 className="text-lg font-bold text-white group-hover:text-[#00C2A1] transition-colors font-display flex items-center justify-between gap-2">
+            <h3 className="text-base sm:text-lg font-bold text-[#0E2A20] group-hover:text-[#176B3A] transition-colors font-display flex items-center justify-between gap-2">
               <span className="truncate">{venue.name}</span>
-              <ExternalLink className="w-3.5 h-3.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-[#00C2A1]" />
+              <ExternalLink className="w-3.5 h-3.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-[#176B3A]" weight="bold" />
             </h3>
           </Link>
-          <p className="text-xs text-gray-400 mt-1 line-clamp-2 leading-relaxed">
-            {venue.tagline}
-          </p>
 
           {/* Compact Pitch Format Pills */}
-          <div className="mt-3 flex flex-wrap gap-1.5">
+          <div className="mt-2 flex flex-wrap gap-1.5">
             {visiblePitches.map((pitch) => {
               const badge = getSportBadge(pitch.sportType);
               return (
@@ -140,36 +145,35 @@ export default function GroundCard({
               );
             })}
             {extraPitchCount > 0 && (
-              <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full border bg-[#090D10] text-gray-400 border-[#17261E]">
-                +{extraPitchCount} more
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-[#F4F5F3] text-[#5C6B64] border-[#E6E7E5]">
+                +{extraPitchCount}
               </span>
             )}
           </div>
         </div>
 
-        {/* Pricing & Pill CTA */}
-        <div className="pt-3.5 border-t border-[#17261E] flex items-center justify-between gap-3">
+        {/* Pricing & Instant Book CTA */}
+        <div className="pt-3 border-t border-[#E6E7E5] flex items-center justify-between gap-3">
           <div>
-            <span className="text-[10px] uppercase tracking-wider text-gray-400 block">
-              From
-            </span>
-            <span className="text-base sm:text-lg font-extrabold text-[#00E575]">
+            <span className="text-base sm:text-lg font-display font-extrabold text-[#176B3A]">
               {formatPKR(lowestPrice)}
-              <span className="text-xs text-gray-400 font-normal"> / hr</span>
+              <span className="text-xs text-[#5C6B64] font-normal"> / hr</span>
             </span>
           </div>
 
-          <button
+          <Button
             type="button"
+            variant="primary"
+            size="sm"
             onClick={() => onSelectVenue(venue)}
-            className="px-4 py-2 rounded-full text-xs sm:text-sm font-bold bg-[#0F1D16] text-white hover:bg-[#00C2A1] hover:text-[#090D10] border border-[#1E3A2B] hover:border-[#00C2A1] transition-all flex items-center gap-1.5 active:scale-95"
+            className="rounded-full px-4 py-2"
           >
-            <Calendar className="w-3.5 h-3.5 text-[#00C2A1] group-hover:text-current" />
-            <span>Book Pitch</span>
-            <ChevronRight className="w-3.5 h-3.5" />
-          </button>
+            <Calendar className="w-3.5 h-3.5" weight="duotone" />
+            <span>Book</span>
+            <ChevronRight className="w-3.5 h-3.5" weight="bold" />
+          </Button>
         </div>
       </div>
-    </article>
+    </Card>
   );
 }

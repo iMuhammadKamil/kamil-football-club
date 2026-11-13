@@ -2,11 +2,15 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["images.unsplash.com"],
+    unoptimized: true,
   },
-  experimental: {
-    webpackBuildWorker: false,
-  },
+  ...(process.platform === "win32"
+    ? {
+        experimental: {
+          webpackBuildWorker: false,
+        },
+      }
+    : {}),
 };
 
 export default nextConfig;

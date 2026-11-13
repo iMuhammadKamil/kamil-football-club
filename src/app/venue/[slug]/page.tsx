@@ -3,18 +3,19 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { notFound, useParams } from "next/navigation";
-import { 
-  MapPin, 
-  Star, 
-  Calendar, 
-  ShieldCheck, 
-  ArrowLeft, 
-  Flame, 
-  Zap, 
-  Clock, 
-  Layers, 
-  CheckCircle2
-} from "lucide-react";
+import {
+  MapPin,
+  Star,
+  Calendar,
+  ShieldCheck,
+  ArrowLeft,
+  Fire as Flame,
+  Lightning as Zap,
+  Clock,
+  Stack as Layers,
+  CheckCircle as CheckCircle2,
+} from "@phosphor-icons/react";
+import { Card } from "@/components/ui";
 import { MOCK_VENUES, SPORT_IMAGES } from "@/data/mockVenues";
 import { formatPKR } from "@/lib/utils";
 import BookingModal from "@/components/BookingModal";
@@ -135,42 +136,42 @@ export default function VenueDetailPage() {
             )}
           </div>
 
-          <div className="bg-dark-card border border-dark-border rounded-2xl p-6 flex flex-col justify-between space-y-6 shadow-xl">
+          <Card className="p-6 flex flex-col justify-between space-y-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-400">Pricing starts at</span>
-                <div className="flex items-center gap-1 text-xs font-bold text-yellow-400">
-                  <Star className="w-4 h-4 fill-yellow-400" />
+                <span className="text-xs text-[#5C6B64] font-medium">Pricing starts at</span>
+                <div className="flex items-center gap-1 text-xs font-bold text-[#0E2A20]">
+                  <Star className="w-4 h-4 text-[#C8A838]" weight="fill" />
                   <span>{venue.rating}</span>
-                  <span className="text-gray-400 font-normal">({venue.reviewCount} reviews)</span>
+                  <span className="text-[#5C6B64] font-normal">({venue.reviewCount} reviews)</span>
                 </div>
               </div>
 
               <div>
-                <span className="text-3xl font-extrabold text-neon-green">
+                <span className="text-3xl font-display font-extrabold text-[#176B3A]">
                   {formatPKR(lowestPrice)}
                 </span>
-                <span className="text-xs text-gray-400"> / hour</span>
+                <span className="text-xs text-[#5C6B64]"> / hour</span>
               </div>
 
-              <div className="bg-dark-elevated p-4 rounded-xl border border-dark-border space-y-2 text-xs">
-                <div className="flex items-center justify-between text-gray-300">
+              <div className="bg-[#F4F5F3] p-4 rounded-xl border border-[#E6E7E5] space-y-2 text-xs">
+                <div className="flex items-center justify-between text-[#5C6B64]">
                   <span className="flex items-center gap-1.5">
-                    <Zap className="w-3.5 h-3.5 text-neon-yellow" /> Generator Backup:
+                    <Zap className="w-4 h-4 text-[#C8A838]" weight="duotone" /> Generator Backup:
                   </span>
-                  <strong className="text-white">200kVA Heavy Diesel</strong>
+                  <strong className="text-[#0E2A20]">200kVA Heavy Diesel</strong>
                 </div>
-                <div className="flex items-center justify-between text-gray-300">
+                <div className="flex items-center justify-between text-[#5C6B64]">
                   <span className="flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-neon-cyan" /> Operating Hours:
+                    <Clock className="w-4 h-4 text-[#176B3A]" weight="duotone" /> Operating Hours:
                   </span>
-                  <strong className="text-white">06:00 AM – 03:00 AM</strong>
+                  <strong className="text-[#0E2A20]">06:00 AM – 03:00 AM</strong>
                 </div>
-                <div className="flex items-center justify-between text-gray-300">
+                <div className="flex items-center justify-between text-[#5C6B64]">
                   <span className="flex items-center gap-1.5">
-                    <ShieldCheck className="w-3.5 h-3.5 text-neon-green" /> Slot Security:
+                    <ShieldCheck className="w-4 h-4 text-[#176B3A]" weight="duotone" /> Slot Security:
                   </span>
-                  <strong className="text-neon-green">10m Atomic Hold</strong>
+                  <strong className="text-[#176B3A]">10m Atomic Hold</strong>
                 </div>
               </div>
             </div>
@@ -181,12 +182,12 @@ export default function VenueDetailPage() {
                 setPreSelectedSlot(undefined);
                 setBookingModalOpen(true);
               }}
-              className="w-full py-4 rounded-xl bg-neon-green text-dark font-extrabold text-sm flex items-center justify-center gap-2 glow-neon-green shadow-xl hover:bg-neon-green/90 transition-all active:scale-95"
+              className="w-full py-4 rounded-xl bg-[#0E2A20] text-[#C8A838] font-display font-extrabold text-sm flex items-center justify-center gap-2 shadow-md hover:bg-[#143B2D] transition-all active:scale-95 cursor-pointer"
             >
-              <Calendar className="w-5 h-5" />
+              <Calendar className="w-5 h-5" weight="duotone" />
               Book Time Slot Now
             </button>
-          </div>
+          </Card>
         </div>
 
         {/* WEEKLY SLOT MATRIX WITH SURGES */}
@@ -197,9 +198,9 @@ export default function VenueDetailPage() {
 
         {/* Pitches Showcase Table */}
         <div className="space-y-4">
-          <h2 className="text-xl font-extrabold text-white font-display flex items-center gap-2">
-            <Layers className="w-5 h-5 text-neon-green" />
-            Available Courts & Pitches ({venue.pitches.length})
+          <h2 className="text-xl font-extrabold text-[#0E2A20] font-display flex items-center gap-2">
+            <Layers className="w-5 h-5 text-[#176B3A]" weight="duotone" />
+            Available Courts &amp; Pitches ({venue.pitches.length})
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -208,22 +209,19 @@ export default function VenueDetailPage() {
               const is11Side = pitch.sportType === "FOOTBALL_11A_SIDE";
               const pitchImg = SPORT_IMAGES[pitch.sportType];
               return (
-                <div
+                <Card
                   key={pitch.id}
-                  className={`rounded-2xl border overflow-hidden transition-all ${
-                    is11Side
-                      ? "bg-dark-card border-neon-cyan/50 shadow-lg"
-                      : "bg-dark-card border-dark-border hover:border-[#00C2A1]/40"
-                  }`}
+                  interactive
+                  className={`overflow-hidden ${is11Side ? "border-[#C8A838]/60" : ""}`}
                 >
-                  <div className="relative h-36 w-full overflow-hidden bg-[#090D10]">
+                  <div className="relative h-36 w-full overflow-hidden bg-[#EAEDEA]">
                     <img
                       src={pitchImg}
                       alt={pitch.name}
                       className="w-full h-full object-cover"
                       loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0C1611] via-[#0C1611]/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0E2A20]/70 via-[#0E2A20]/15 to-transparent" />
                     <span className={`absolute top-3 left-3 text-[10px] font-bold px-2.5 py-0.5 rounded-full border backdrop-blur-md ${badge.bg}`}>
                       {badge.label}
                     </span>
@@ -231,57 +229,57 @@ export default function VenueDetailPage() {
 
                   <div className="p-5">
                     <div className="flex items-center justify-between gap-2">
-                      <h3 className="text-base font-bold text-white font-display">
+                      <h3 className="text-base font-bold text-[#0E2A20] font-display">
                         {pitch.name}
                       </h3>
                       <div className="text-right shrink-0">
-                        <span className="text-base font-extrabold text-neon-green">
+                        <span className="text-base font-display font-extrabold text-[#176B3A]">
                           {formatPKR(pitch.pricePerHour)}
                         </span>
-                        <span className="text-[10px] text-gray-400 block">/ hour</span>
+                        <span className="text-[10px] text-[#5C6B64] block">/ hour</span>
                       </div>
                     </div>
 
-                    <div className="mt-3 pt-3 border-t border-dark-border/60 text-xs text-gray-300 space-y-1">
+                    <div className="mt-3 pt-3 border-t border-[#E6E7E5] text-xs text-[#5C6B64] space-y-1">
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Dimensions:</span>
-                        <span className="font-semibold text-white">{pitch.dimensions || "Standard"}</span>
+                        <span>Dimensions:</span>
+                        <span className="font-semibold text-[#0E2A20]">{pitch.dimensions || "Standard"}</span>
                       </div>
                       <div className="flex justify-between gap-2">
-                        <span className="text-gray-400 shrink-0">Surface Spec:</span>
-                        <span className="font-semibold text-white text-right">{pitch.surfaceType}</span>
+                        <span className="shrink-0">Surface Spec:</span>
+                        <span className="font-semibold text-[#0E2A20] text-right">{pitch.surfaceType}</span>
                       </div>
                     </div>
 
                     <button
                       onClick={() => handleOpenPitchBooking(pitch)}
-                      className="w-full mt-4 py-2.5 rounded-full bg-dark-elevated hover:bg-neon-cyan hover:text-dark text-white text-xs font-bold border border-dark-border hover:border-neon-cyan transition-all"
+                      className="w-full mt-4 py-2.5 rounded-xl bg-[#F4F5F3] hover:bg-[#176B3A] hover:text-white text-[#0E2A20] text-xs font-display font-bold border border-[#E6E7E5] hover:border-[#176B3A] transition-all cursor-pointer"
                     >
-                      Select Pitch & View Slots
+                      Select Pitch &amp; View Slots
                     </button>
                   </div>
-                </div>
+                </Card>
               );
             })}
           </div>
         </div>
 
         {/* Amenities Grid */}
-        <div className="bg-dark-card border border-dark-border p-6 rounded-2xl space-y-3">
-          <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-            Venue Amenities & Facilities
+        <Card className="p-6 space-y-3">
+          <h3 className="text-sm font-bold text-[#0E2A20] uppercase tracking-wider font-display">
+            Venue Amenities &amp; Facilities
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
             {venue.amenities.map((amenity, idx) => (
               <div
                 key={idx}
-                className="p-3 rounded-xl bg-dark-elevated border border-dark-border text-center text-xs text-gray-300 font-medium"
+                className="p-3 rounded-xl bg-[#F4F5F3] border border-[#E6E7E5] text-center text-xs text-[#0E2A20] font-semibold"
               >
                 {amenity}
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       </div>
 
       {/* Booking Drawer */}

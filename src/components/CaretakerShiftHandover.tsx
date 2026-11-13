@@ -2,18 +2,16 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { 
-  ShieldCheck, 
-  Banknote, 
-  AlertTriangle, 
-  CheckCircle2, 
-  ArrowLeft, 
-  Clock, 
-  FileText,
-  Send,
-  Lock
-} from "lucide-react";
+import {
+  Money as Banknote,
+  Warning as AlertTriangle,
+  CheckCircle as CheckCircle2,
+  ArrowLeft,
+  Clock,
+  Lock,
+} from "@phosphor-icons/react";
 import { formatPKR } from "@/lib/utils";
+import { Card, Button, Badge } from "@/components/ui";
 
 export default function CaretakerShiftHandover() {
   const [caretakerName, setCaretakerName] = useState<string>("Chacha Tariq (Head Attendant)");
@@ -60,56 +58,56 @@ export default function CaretakerShiftHandover() {
   };
 
   return (
-    <div className="max-w-md mx-auto p-4 space-y-5">
-      <div className="flex items-center justify-between pb-3 border-b border-dark-border">
+    <div className="max-w-lg mx-auto p-4 sm:p-6 space-y-5">
+      <div className="flex items-center justify-between pb-3 border-b border-[#E6E7E5]">
         <Link
           href="/caretaker"
-          className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-white"
+          className="flex items-center gap-1.5 text-xs font-semibold text-[#5C6B64] hover:text-[#0E2A20]"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4" weight="bold" />
           Back to Field Check-In
         </Link>
-        <span className="px-2.5 py-1 rounded-full bg-neon-yellow/10 border border-neon-yellow/30 text-neon-yellow text-xs font-bold flex items-center gap-1">
-          <Clock className="w-3.5 h-3.5" /> Shift Handover
-        </span>
+        <Badge tone="gold">
+          <Clock className="w-3.5 h-3.5" weight="duotone" /> Shift Handover
+        </Badge>
       </div>
 
-      <div className="bg-dark-card border border-dark-border p-5 rounded-2xl space-y-4 shadow-xl">
+      <Card className="p-5 sm:p-6 space-y-4">
         <div>
-          <span className="text-[10px] uppercase font-bold text-neon-green tracking-wider">
+          <span className="text-[10px] uppercase font-bold text-[#176B3A] tracking-wider">
             Night Shift Closure (03:00 AM)
           </span>
-          <h2 className="text-base font-bold text-white font-display mt-0.5">
+          <h2 className="text-lg font-bold text-[#0E2A20] font-display mt-0.5">
             Caretaker Cash Drawer Reconciliation
           </h2>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-[#5C6B64]">
             Reconcile physical cash drawer with verified on-ground match receipts.
           </p>
         </div>
 
         {/* Expected Cash Box */}
-        <div className="bg-dark-elevated p-4 rounded-xl border border-dark-border space-y-1">
-          <span className="text-[11px] text-gray-400 block">System Expected Physical Cash</span>
-          <div className="text-2xl font-mono font-extrabold text-neon-green">
+        <div className="bg-[#F4F5F3] p-4 rounded-xl border border-[#E6E7E5] space-y-1">
+          <span className="text-[11px] text-[#5C6B64] font-medium block">System Expected Physical Cash</span>
+          <div className="text-2xl font-display font-extrabold text-[#176B3A]">
             {formatPKR(expectedCash)}
           </div>
-          <span className="text-[10px] text-gray-400 block">
-            Calculated from 5 cash-on-arrival bookings & 2 walk-in matches tonight
+          <span className="text-[10px] text-[#5C6B64] block">
+            Calculated from 5 cash-on-arrival bookings &amp; 2 walk-in matches tonight
           </span>
         </div>
 
         {/* Actual Cash Input */}
         <div className="space-y-1.5">
-          <label className="text-xs font-bold text-gray-300 block">
+          <label className="text-xs font-bold text-[#0E2A20] block">
             Actual Cash Counted in Drawer (PKR)
           </label>
           <div className="relative">
-            <Banknote className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Banknote className="w-4 h-4 text-[#176B3A] absolute left-3 top-1/2 -translate-y-1/2" weight="duotone" />
             <input
               type="number"
               value={countedCashInput}
               onChange={(e) => setCountedCashInput(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-dark border border-dark-border text-white text-sm font-mono font-bold focus:outline-none focus:border-neon-cyan"
+              className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[#F9FAF9] border border-[#E6E7E5] text-[#0E2A20] text-sm font-mono font-bold focus:outline-none focus:border-[#176B3A] focus:bg-white"
             />
           </div>
         </div>
@@ -118,16 +116,16 @@ export default function CaretakerShiftHandover() {
         <div
           className={`p-3.5 rounded-xl border flex items-start gap-2.5 text-xs transition-all ${
             isThresholdBreached
-              ? "bg-red-950/40 border-red-500/50 text-red-200"
+              ? "bg-[#E94A10]/10 border-[#E94A10]/30 text-[#B83206]"
               : discrepancy === 0
-              ? "bg-emerald-950/40 border-neon-green/40 text-neon-green"
-              : "bg-dark-elevated border-dark-border text-gray-300"
+              ? "bg-[#176B3A]/10 border-[#176B3A]/25 text-[#176B3A]"
+              : "bg-[#F4F5F3] border-[#E6E7E5] text-[#0E2A20]"
           }`}
         >
           {isThresholdBreached ? (
-            <AlertTriangle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+            <AlertTriangle className="w-5 h-5 text-[#E94A10] shrink-0 mt-0.5" weight="duotone" />
           ) : (
-            <CheckCircle2 className="w-5 h-5 text-neon-green shrink-0 mt-0.5" />
+            <CheckCircle2 className="w-5 h-5 text-[#176B3A] shrink-0 mt-0.5" weight="duotone" />
           )}
           <div>
             <div className="font-bold">
@@ -137,9 +135,9 @@ export default function CaretakerShiftHandover() {
                 ? `Cash Shortage: -${formatPKR(absDiff)}`
                 : `Cash Surplus: +${formatPKR(absDiff)}`}
             </div>
-            <p className="text-[11px] opacity-80 mt-0.5">
+            <p className="text-[11px] opacity-85 mt-0.5">
               {isThresholdBreached
-                ? "⚠️ Policy Alert: Shortage exceeds the Rs. 500 audit limit. An automatic audit alert will be dispatched to the venue owner's WhatsApp upon submission."
+                ? "Policy Alert: Shortage exceeds the Rs. 500 audit limit. An automatic audit alert will be dispatched to the venue owner's WhatsApp upon submission."
                 : "Drawer variance is within allowable bounds (±Rs. 500 threshold)."}
             </p>
           </div>
@@ -147,47 +145,49 @@ export default function CaretakerShiftHandover() {
 
         {/* Shift Notes */}
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold text-gray-300 block">
+          <label className="text-[11px] font-bold text-[#0E2A20] block">
             Shift Handover Notes
           </label>
           <textarea
             rows={2}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="w-full p-2.5 rounded-xl bg-dark border border-dark-border text-white text-xs focus:outline-none focus:border-neon-cyan"
+            className="w-full p-2.5 rounded-xl bg-[#F9FAF9] border border-[#E6E7E5] text-[#0E2A20] text-xs focus:outline-none focus:border-[#176B3A] focus:bg-white"
           />
         </div>
 
         {/* Action Button */}
-        <button
+        <Button
           onClick={handleSubmitHandover}
           disabled={isSubmitting}
-          className="w-full py-3.5 rounded-xl bg-neon-cyan text-dark font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 glow-neon-cyan shadow-lg hover:bg-neon-cyan/90 transition-all active:scale-95"
+          variant="primary"
+          size="lg"
+          className="w-full"
         >
-          <Lock className="w-4 h-4" />
+          <Lock className="w-4 h-4" weight="duotone" />
           {isSubmitting ? "Reconciling..." : "Submit Shift Handover & Lock Ledger"}
-        </button>
+        </Button>
 
         {submitError && (
-          <div className="p-3 rounded-xl bg-red-950/40 border border-red-500/40 text-red-300 text-xs">
+          <div className="p-3 rounded-xl bg-[#E94A10]/10 border border-[#E94A10]/25 text-[#E94A10] text-xs font-medium">
             {submitError}
           </div>
         )}
 
         {shiftCompleted && (
-          <div className="p-3.5 rounded-xl bg-emerald-950/50 border border-neon-green/40 text-neon-green text-xs space-y-2 animate-in zoom-in-95">
+          <div className="p-3.5 rounded-xl bg-[#176B3A]/10 border border-[#176B3A]/25 text-[#176B3A] text-xs space-y-2 animate-in zoom-in-95">
             <div className="flex items-center gap-1.5 font-bold">
-              <CheckCircle2 className="w-4 h-4" />
+              <CheckCircle2 className="w-4 h-4" weight="duotone" />
               {shiftCompleted.message}
             </div>
             {shiftCompleted.alertTriggered && (
-              <div className="bg-dark p-2 rounded text-[10px] text-gray-300 font-mono">
+              <div className="bg-white border border-[#E6E7E5] p-2 rounded text-[10px] text-[#0E2A20] font-mono">
                 {shiftCompleted.alertPreview}
               </div>
             )}
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

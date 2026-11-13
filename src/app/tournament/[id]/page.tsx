@@ -3,16 +3,16 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { 
-  Trophy, 
-  ShieldCheck, 
-  Share2, 
-  ArrowLeft, 
-  MapPin, 
-  Flame,
-  Award,
-  MessageCircle,
-} from "lucide-react";
+import {
+  Trophy,
+  ShieldCheck,
+  ShareNetwork as Share2,
+  ArrowLeft,
+  MapPin,
+  Fire as Flame,
+  Medal as Award,
+  ChatCircle as MessageCircle,
+} from "@phosphor-icons/react";
 import { generateRandomBracket } from "@/lib/tournamentEngine";
 import { formatPKR } from "@/lib/utils";
 import { TOURNAMENTS } from "@/components/TournamentSection";

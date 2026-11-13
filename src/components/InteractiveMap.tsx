@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { GroundVenue } from "@/types";
-import { MapPin, Navigation, ChevronRight, Layers } from "lucide-react";
+import { Compass, CaretRight } from "@phosphor-icons/react";
 import { formatPKR } from "@/lib/utils";
 
 // Import Leaflet CSS
@@ -48,7 +48,7 @@ export default function InteractiveMap({ venues, onSelectVenue }: InteractiveMap
   const tileLayerRef = useRef<any>(null);
   const [activeVenue, setActiveVenue] = useState<GroundVenue | null>(null);
   const [activeCityFilter, setActiveCityFilter] = useState<string>("ALL");
-  const [selectedMapTheme, setSelectedMapTheme] = useState<"darkCanvas" | "osm" | "satellite">("darkCanvas");
+  const [selectedMapTheme, setSelectedMapTheme] = useState<"darkCanvas" | "osm" | "satellite">("osm");
 
   useEffect(() => {
     const container = mapContainerRef.current;
@@ -163,56 +163,56 @@ export default function InteractiveMap({ venues, onSelectVenue }: InteractiveMap
   };
 
   return (
-    <div className="relative rounded-2xl overflow-hidden border border-dark-border shadow-2xl h-[440px] w-full bg-[#090D10]">
+    <div className="relative rounded-2xl overflow-hidden border border-[#E6E7E5] shadow-[0_2px_10px_rgba(14,42,32,0.06)] h-[440px] w-full bg-[#F4F5F3]">
       <div ref={mapContainerRef} className="h-full w-full z-10" />
 
       {/* Map Header Overlay & City Quick Jumps */}
       <div className="absolute top-3 left-3 right-3 z-20 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
         <div className="flex items-center gap-2 pointer-events-auto">
-          <div className="px-3 py-1.5 rounded-xl bg-[#090D10]/90 backdrop-blur-md border border-dark-border text-xs text-white font-medium flex items-center gap-2 shadow-lg">
-            <Navigation className="w-3.5 h-3.5 text-neon-green" />
+          <div className="px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-md border border-[#E6E7E5] text-xs text-[#0E2A20] font-semibold flex items-center gap-2 shadow-sm">
+            <Compass className="w-4 h-4 text-[#176B3A]" weight="duotone" />
             <span>Pakistan Sports Radar</span>
           </div>
 
-          {/* Theme switcher: Dark Canvas vs Satellite vs OSM */}
-          <div className="hidden sm:flex items-center bg-[#090D10]/90 backdrop-blur-md p-1 rounded-xl border border-dark-border text-[10px] text-gray-300">
+          {/* Theme switcher: OSM vs Satellite vs Dark Canvas */}
+          <div className="hidden sm:flex items-center bg-white/95 backdrop-blur-md p-1 rounded-xl border border-[#E6E7E5] text-[10px] text-[#5C6B64] shadow-sm">
             <button
-              onClick={() => setSelectedMapTheme("darkCanvas")}
-              className={`px-2 py-0.5 rounded-lg font-bold transition-all ${
-                selectedMapTheme === "darkCanvas" ? "bg-neon-green text-dark" : "hover:text-white"
+              onClick={() => setSelectedMapTheme("osm")}
+              className={`px-2 py-0.5 rounded-lg font-bold transition-all cursor-pointer ${
+                selectedMapTheme === "osm" ? "bg-[#176B3A] text-white" : "hover:text-[#0E2A20]"
               }`}
             >
-              Dark Clean
+              Street Map
             </button>
             <button
               onClick={() => setSelectedMapTheme("satellite")}
-              className={`px-2 py-0.5 rounded-lg font-bold transition-all ${
-                selectedMapTheme === "satellite" ? "bg-neon-cyan text-dark" : "hover:text-white"
+              className={`px-2 py-0.5 rounded-lg font-bold transition-all cursor-pointer ${
+                selectedMapTheme === "satellite" ? "bg-[#0E2A20] text-[#C8A838]" : "hover:text-[#0E2A20]"
               }`}
             >
               Satellite
             </button>
             <button
-              onClick={() => setSelectedMapTheme("osm")}
-              className={`px-2 py-0.5 rounded-lg font-bold transition-all ${
-                selectedMapTheme === "osm" ? "bg-neon-yellow text-dark" : "hover:text-white"
+              onClick={() => setSelectedMapTheme("darkCanvas")}
+              className={`px-2 py-0.5 rounded-lg font-bold transition-all cursor-pointer ${
+                selectedMapTheme === "darkCanvas" ? "bg-[#C8A838] text-[#0E2A20]" : "hover:text-[#0E2A20]"
               }`}
             >
-              OSM
+              Dark
             </button>
           </div>
         </div>
 
         {/* City Focus Buttons */}
-        <div className="flex items-center gap-1.5 bg-[#090D10]/90 backdrop-blur-md p-1 rounded-xl border border-dark-border shadow-lg pointer-events-auto">
+        <div className="flex items-center gap-1.5 bg-white/95 backdrop-blur-md p-1 rounded-xl border border-[#E6E7E5] shadow-sm pointer-events-auto">
           {["ALL", "Karachi", "Lahore", "Islamabad", "Rawalpindi"].map((city) => (
             <button
               key={city}
               onClick={() => handleCityJump(city)}
-              className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all ${
+              className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
                 activeCityFilter === city
-                  ? "bg-neon-green text-dark shadow-sm"
-                  : "text-gray-300 hover:text-white hover:bg-dark-elevated"
+                  ? "bg-[#176B3A] text-white shadow-sm"
+                  : "text-[#5C6B64] hover:text-[#0E2A20] hover:bg-[#F4F5F3]"
               }`}
             >
               {city}
@@ -223,31 +223,31 @@ export default function InteractiveMap({ venues, onSelectVenue }: InteractiveMap
 
       {/* Selected Venue Floating Quick-Card */}
       {activeVenue && (
-        <div className="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:max-w-xs z-20 bg-[#0C1611]/95 backdrop-blur-md border border-neon-green/60 p-4 rounded-xl shadow-2xl animate-in slide-in-from-bottom-2">
-          <div className="flex items-center justify-between text-[10px] text-neon-green font-bold uppercase tracking-wider">
+        <div className="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:max-w-xs z-20 bg-white/95 backdrop-blur-md border border-[#176B3A]/40 p-4 rounded-2xl shadow-[0_8px_24px_rgba(14,42,32,0.14)] animate-in slide-in-from-bottom-2">
+          <div className="flex items-center justify-between text-[10px] text-[#176B3A] font-bold uppercase tracking-wider">
             <span>{activeVenue.city} • {activeVenue.area}</span>
             <button
               onClick={() => setActiveVenue(null)}
-              className="text-gray-400 hover:text-white"
+              className="text-[#5C6B64] hover:text-[#0E2A20] cursor-pointer"
             >
               ✕
             </button>
           </div>
-          <h4 className="text-sm font-bold text-white mt-1 font-display">
+          <h4 className="text-sm font-bold text-[#0E2A20] mt-1 font-display">
             {activeVenue.name}
           </h4>
-          <p className="text-xs text-gray-400 mt-0.5 line-clamp-1">
+          <p className="text-xs text-[#5C6B64] mt-0.5 line-clamp-1">
             {activeVenue.tagline}
           </p>
-          <div className="flex items-center justify-between mt-3 pt-2 border-t border-dark-border">
-            <span className="text-xs font-bold text-neon-green">
+          <div className="flex items-center justify-between mt-3 pt-2 border-t border-[#E6E7E5]">
+            <span className="text-xs font-display font-bold text-[#176B3A]">
               from {formatPKR(Math.min(...activeVenue.pitches.map((p) => p.pricePerHour)))}/hr
             </span>
             <button
               onClick={() => onSelectVenue(activeVenue)}
-              className="px-3 py-1.5 rounded-lg bg-neon-green text-dark text-xs font-bold flex items-center gap-1 shadow-md hover:bg-neon-green/90"
+              className="px-3 py-1.5 rounded-lg bg-[#0E2A20] text-[#C8A838] text-xs font-display font-bold flex items-center gap-1 shadow-sm hover:bg-[#143B2D] cursor-pointer"
             >
-              Book Slot <ChevronRight className="w-3.5 h-3.5" />
+              Book Slot <CaretRight className="w-3.5 h-3.5" weight="bold" />
             </button>
           </div>
         </div>

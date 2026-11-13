@@ -1,30 +1,30 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { 
-  X, 
-  Clock, 
-  Calendar, 
-  CheckCircle2, 
-  AlertCircle, 
-  Users, 
-  Plus, 
+import {
+  X,
+  Clock,
+  Calendar,
+  CheckCircle as CheckCircle2,
+  WarningCircle as AlertCircle,
+  Users,
+  Plus,
   Minus,
-  Trash2, 
-  Share2, 
-  QrCode, 
-  Copy, 
-  Check, 
-  ShieldCheck, 
+  Trash as Trash2,
+  ShareNetwork as Share2,
+  QrCode,
+  Copy,
+  Check,
+  ShieldCheck,
   ArrowRight,
-  Flame,
+  Fire as Flame,
   Phone,
-  MessageCircle,
-  Banknote,
-  Zap,
-  ShieldAlert,
-  Tag
-} from "lucide-react";
+  ChatCircle as MessageCircle,
+  Money as Banknote,
+  Lightning as Zap,
+  ShieldWarning as ShieldAlert,
+  Tag,
+} from "@phosphor-icons/react";
 import { GroundVenue, Pitch, TimeSlot, AddOnItem, BookingDetails, PaymentMethod } from "@/types";
 import { formatPKR } from "@/lib/utils";
 import { generateDaySlots } from "@/lib/slotEngine";
@@ -88,6 +88,8 @@ export default function BookingModal({
   const [voucherStatus, setVoucherStatus] = useState<{ ok: boolean; text: string } | null>(null);
   const [serverBookings, setServerBookings] = useState<any[]>([]);
   const [serverLocks, setServerLocks] = useState<{ slotId: string }[]>([]);
+  const [rushPhone, setRushPhone] = useState<string>("");
+  const [rushJoined, setRushJoined] = useState<boolean>(false);
 
   useEffect(() => {
     Promise.all([fetch("/api/bookings"), fetch("/api/slots/lock")])
@@ -324,60 +326,60 @@ export default function BookingModal({
   const formattedHoldTime = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-2xl bg-[#0C1611] border border-dark-border rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto max-h-[92vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-[#0E2A20]/60 backdrop-blur-sm overflow-y-auto">
+      <div className="relative w-full max-w-2xl bg-white border border-[#E6E7E5] rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto max-h-[92vh]">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-dark-border bg-dark-card flex items-center justify-between">
+        <div className="p-4 sm:p-5 border-b border-[#E6E7E5] bg-[#F4F5F3] flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-neon-cyan/15 text-neon-cyan border border-neon-cyan/30">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#176B3A]/10 text-[#176B3A] border border-[#176B3A]/20">
                 {venue.city}
               </span>
-              <h2 className="text-base sm:text-lg font-bold text-white font-display">
+              <h2 className="text-base sm:text-lg font-bold text-[#0E2A20] font-display">
                 {venue.name}
               </h2>
             </div>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <p className="text-xs text-[#5C6B64] mt-0.5">
               {venue.area} • 50m Match Play + 10m Buffer Changeover
             </p>
           </div>
 
           <button
             onClick={handleCloseModal}
-            className="p-1.5 rounded-lg bg-dark-elevated text-gray-400 hover:text-white border border-dark-border"
+            className="p-1.5 rounded-lg bg-white text-[#5C6B64] hover:text-[#0E2A20] border border-[#E6E7E5] cursor-pointer"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5" weight="bold" />
           </button>
         </div>
 
         {/* 10-Minute Lock Banner */}
         {holdTimerActive && selectedSlot && step !== "CONFIRMED" && (
-          <div className="px-4 py-2.5 bg-yellow-500/10 border-b border-yellow-500/30 flex items-center justify-between text-xs text-yellow-300">
+          <div className="px-4 py-2.5 bg-[#C8A838]/15 border-b border-[#C8A838]/30 flex items-center justify-between text-xs text-[#0E2A20]">
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-neon-yellow animate-pulse" />
+              <Clock className="w-4 h-4 text-[#B69422] animate-pulse" weight="duotone" />
               <span>
                 Slot <strong>{selectedSlot.startTime} - {selectedSlot.endTime}</strong> locked. Complete checkout before timer ends.
               </span>
             </div>
-            <div className="font-mono font-bold bg-dark text-neon-yellow px-2 py-0.5 rounded border border-neon-yellow/30">
+            <div className="font-mono font-bold bg-[#0E2A20] text-[#C8A838] px-2 py-0.5 rounded">
               {formattedHoldTime}
             </div>
           </div>
         )}
 
         {holdExpiredMsg && (
-          <div className="px-4 py-2 bg-[#E94A10]/15 border-b border-[#E94A10]/30 text-xs text-[#FF7A4D]">
+          <div className="px-4 py-2 bg-[#E94A10]/10 border-b border-[#E94A10]/25 text-xs text-[#E94A10] font-medium">
             {holdExpiredMsg}
           </div>
         )}
 
         {/* Content Body */}
-        <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-6">
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-6 bg-white text-[#0E2A20]">
           {step === "SLOTS" && (
             <div className="space-y-5">
               {/* Pitch Selector */}
               <div>
-                <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block mb-2">
+                <label className="text-xs font-bold text-[#0E2A20] uppercase tracking-wider block mb-2">
                   1. Select Pitch or Court
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -388,25 +390,25 @@ export default function BookingModal({
                       <button
                         key={pitch.id}
                         onClick={() => setSelectedPitch(pitch)}
-                        className={`p-3 rounded-xl border text-left transition-all ${
+                        className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
                           active
-                            ? "bg-neon-green/10 border-neon-green text-white shadow-neon-green/10 shadow-md"
-                            : "bg-dark-card border-dark-border text-gray-300 hover:border-gray-500"
+                            ? "bg-[#176B3A]/10 border-[#176B3A] text-[#0E2A20] shadow-sm"
+                            : "bg-white border-[#E6E7E5] text-[#5C6B64] hover:border-[#176B3A]/50"
                         }`}
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold font-display line-clamp-1">
+                          <span className="text-xs font-bold font-display text-[#0E2A20] line-clamp-1">
                             {pitch.name}
                           </span>
                           {is11Side && (
-                            <span className="px-1.5 py-0.2 rounded text-[9px] font-extrabold bg-neon-green text-[#090D10]">
+                            <span className="px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-[#0E2A20] text-[#C8A838]">
                               11v11 Full Stadium
                             </span>
                           )}
                         </div>
-                        <div className="flex items-center justify-between mt-2 text-[11px] text-gray-400">
+                        <div className="flex items-center justify-between mt-2 text-[11px] text-[#5C6B64]">
                           <span>{pitch.dimensions || "Standard"}</span>
-                          <span className="font-bold text-neon-green">
+                          <span className="font-display font-bold text-[#176B3A]">
                             {formatPKR(pitch.pricePerHour)}/hr
                           </span>
                         </div>
@@ -418,7 +420,7 @@ export default function BookingModal({
 
               {/* Date Selector */}
               <div>
-                <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block mb-2">
+                <label className="text-xs font-bold text-[#0E2A20] uppercase tracking-wider block mb-2">
                   2. Select Match Date
                 </label>
                 <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
@@ -435,17 +437,17 @@ export default function BookingModal({
                       <button
                         key={dStr}
                         onClick={() => setSelectedDate(dStr)}
-                        className={`px-3 py-2 rounded-xl border text-center min-w-[70px] shrink-0 transition-all ${
+                        className={`px-3 py-2 rounded-xl border text-center min-w-[70px] shrink-0 transition-all cursor-pointer ${
                           active
-                            ? "bg-neon-green text-[#090D10] border-neon-green font-bold shadow-md"
-                            : "bg-dark-card text-gray-300 border-dark-border hover:border-gray-500"
+                            ? "bg-[#176B3A] text-white border-[#176B3A] font-bold shadow-sm"
+                            : "bg-[#F4F5F3] text-[#5C6B64] border-[#E6E7E5] hover:border-[#176B3A]/40 hover:text-[#0E2A20]"
                         }`}
                       >
                         <span className="block text-[10px] uppercase font-semibold">
                           {offset === 0 ? "Today" : dayName}
                         </span>
-                        <span className="block text-sm font-extrabold">{dayNum}</span>
-                        <span className="block text-[9px] opacity-75">{monthName}</span>
+                        <span className="block text-sm font-display font-extrabold">{dayNum}</span>
+                        <span className="block text-[9px] opacity-80">{monthName}</span>
                       </button>
                     );
                   })}
@@ -453,22 +455,22 @@ export default function BookingModal({
               </div>
 
               {/* Generator Surcharge Toggle */}
-              <div className="p-3 bg-dark-card rounded-xl border border-dark-border flex items-center justify-between text-xs">
+              <div className="p-3 bg-[#F4F5F3] rounded-xl border border-[#E6E7E5] flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2">
-                  <Zap className={`w-4 h-4 ${isGeneratorActive ? "text-neon-yellow" : "text-gray-500"}`} />
+                  <Zap className={`w-4 h-4 ${isGeneratorActive ? "text-[#C8A838]" : "text-[#5C6B64]"}`} weight="duotone" />
                   <div>
-                    <span className="font-bold text-white block">K-Electric / LESCO Outage Mode</span>
-                    <span className="text-[10px] text-gray-400">
+                    <span className="font-bold text-[#0E2A20] block">K-Electric / LESCO Outage Mode</span>
+                    <span className="text-[10px] text-[#5C6B64]">
                       {isGeneratorActive ? "200kVA Heavy Diesel Generator Active (+Rs. 1,500 fuel surcharge)" : "Normal Grid Power (Standard rate)"}
                     </span>
                   </div>
                 </div>
                 <button
                   onClick={() => setIsGeneratorActive(!isGeneratorActive)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition-all ${
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
                     isGeneratorActive
-                      ? "bg-neon-yellow text-dark border-neon-yellow"
-                      : "bg-dark-elevated text-gray-400 border-dark-border"
+                      ? "bg-[#C8A838] text-[#0E2A20] border-[#C8A838]"
+                      : "bg-white text-[#5C6B64] border-[#E6E7E5]"
                   }`}
                 >
                   {isGeneratorActive ? "+Rs. 1,500 ON" : "Grid ON"}
@@ -478,18 +480,18 @@ export default function BookingModal({
               {/* Slots Grid */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs font-bold text-gray-300 uppercase tracking-wider">
+                  <label className="text-xs font-bold text-[#0E2A20] uppercase tracking-wider">
                     3. Select Available Slot (50m Play + 10m Buffer)
                   </label>
-                  <div className="flex items-center gap-3 text-[10px] text-gray-400">
+                  <div className="flex items-center gap-3 text-[10px] text-[#5C6B64] font-medium">
                     <span className="flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-neon-green" /> Open
+                      <span className="w-2 h-2 rounded-full bg-[#176B3A]" /> Open
                     </span>
                     <span className="flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-yellow-400" /> Locked
+                      <span className="w-2 h-2 rounded-full bg-[#C8A838]" /> Locked
                     </span>
                     <span className="flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-red-500" /> Booked
+                      <span className="w-2 h-2 rounded-full bg-[#E94A10]" /> Booked
                     </span>
                   </div>
                 </div>
@@ -500,13 +502,13 @@ export default function BookingModal({
                     const isBooked = slot.status === "BOOKED";
                     const isLocked = slot.status === "HOLD_LOCKED" && !isSelected;
 
-                    let btnClasses = "bg-dark-card border-dark-border text-white hover:border-neon-green";
+                    let btnClasses = "bg-white border-[#E6E7E5] text-[#0E2A20] hover:border-[#176B3A] cursor-pointer";
                     if (isSelected) {
-                      btnClasses = "bg-neon-green text-[#090D10] border-neon-green font-bold shadow-neon-green/20 shadow-lg";
+                      btnClasses = "bg-[#176B3A] text-white border-[#176B3A] font-bold shadow-sm cursor-pointer";
                     } else if (isBooked) {
-                      btnClasses = "bg-red-950/20 border-red-900/30 text-gray-500 cursor-not-allowed line-through";
+                      btnClasses = "bg-[#F4F5F3] border-[#E6E7E5] text-[#5C6B64]/50 cursor-not-allowed line-through";
                     } else if (isLocked) {
-                      btnClasses = "bg-yellow-950/20 border-yellow-800/40 text-yellow-500 cursor-not-allowed";
+                      btnClasses = "bg-[#C8A838]/15 border-[#C8A838]/40 text-[#8D7216] cursor-not-allowed";
                     }
 
                     return (
@@ -516,15 +518,63 @@ export default function BookingModal({
                         onClick={() => handleSelectSlot(slot)}
                         className={`p-2.5 rounded-xl border text-center transition-all ${btnClasses}`}
                       >
-                        <div className="text-xs font-mono font-bold">
+                        <div className="text-xs font-display font-bold">
                           {slot.startTime} - {slot.endTime}
                         </div>
-                        <div className={`text-[10px] mt-0.5 ${isSelected ? "text-dark" : "text-gray-400"}`}>
+                        <div className={`text-[10px] mt-0.5 font-semibold ${isSelected ? "text-[#C8A838]" : "text-[#176B3A]"}`}>
                           {isBooked ? "Booked" : isLocked ? "On Hold" : formatPKR(slot.price + generatorFee)}
                         </div>
                       </button>
                     );
                   })}
+                </div>
+
+                {/* 1-Tap Peak Rush Waitlist */}
+                <div className="mt-4 p-3 rounded-xl bg-[#F4F5F3] border border-[#E6E7E5] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
+                  <div>
+                    <span className="font-display font-bold text-[#0E2A20] block">
+                      Prime slot full? Join Rush Waitlist
+                    </span>
+                    <span className="text-[11px] text-[#5C6B64]">
+                      Instant WhatsApp alert if a squad cancels or no-shows.
+                    </span>
+                  </div>
+                  {rushJoined ? (
+                    <span className="px-3 py-1.5 rounded-lg bg-[#176B3A]/10 text-[#176B3A] font-bold text-[11px] shrink-0">
+                      ✓ Added to Rush Queue
+                    </span>
+                  ) : (
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <input
+                        type="tel"
+                        placeholder="0300-1234567"
+                        value={rushPhone}
+                        onChange={(e) => setRushPhone(e.target.value)}
+                        className="w-32 px-2.5 py-1.5 rounded-lg bg-white border border-[#E6E7E5] text-[#0E2A20] text-xs focus:outline-none focus:border-[#176B3A]"
+                      />
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          if (!rushPhone.trim()) return;
+                          await fetch("/api/rush", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              action: "JOIN_QUEUE",
+                              squadName: captainName || `${venue.area} Squad`,
+                              phone: rushPhone,
+                              sport: selectedPitch.name,
+                              preferredSlot: "Prime Evening",
+                            }),
+                          });
+                          setRushJoined(true);
+                        }}
+                        className="px-3 py-1.5 rounded-lg bg-[#0E2A20] text-[#C8A838] font-display font-bold text-xs cursor-pointer hover:bg-[#143B2D]"
+                      >
+                        Notify Me
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -1074,13 +1124,13 @@ export default function BookingModal({
         )}
 
         {/* Footer Navigation CTAs */}
-        <div className="p-4 border-t border-dark-border bg-dark-card flex items-center justify-between">
+        <div className="p-4 border-t border-[#E6E7E5] bg-[#F4F5F3] flex items-center justify-between">
           {step === "SLOTS" && (
             <>
               <div>
-                <span className="text-[10px] text-gray-400 block">Selected Slot</span>
-                <span className="text-xs font-bold text-white">
-                  {selectedSlot ? `${selectedSlot.startTime} - ${selectedSlot.endTime}` : "None selected"}
+                <span className="text-[10px] text-[#5C6B64] font-semibold uppercase tracking-wider block">Selected Slot</span>
+                <span className="text-xs font-display font-bold text-[#0E2A20]">
+                  {selectedSlot ? `${selectedSlot.startTime} - ${selectedSlot.endTime}` : "Tap a slot above"}
                 </span>
               </div>
               <button
@@ -1089,10 +1139,10 @@ export default function BookingModal({
                   setFormError(null);
                   setStep("ADDONS_SQUAD");
                 }}
-                className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-neon-green text-dark disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neon-green/90 transition-all flex items-center gap-2 glow-neon-green"
+                className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-display font-bold bg-[#0E2A20] text-[#C8A838] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#143B2D] transition-all flex items-center gap-2 shadow-sm cursor-pointer"
               >
-                Next: Add-ons & Squad
-                <ArrowRight className="w-4 h-4" />
+                Continue · {formatPKR(grandTotal)}
+                <ArrowRight className="w-4 h-4" weight="bold" />
               </button>
             </>
           )}
@@ -1104,7 +1154,7 @@ export default function BookingModal({
                   setFormError(null);
                   setStep("SLOTS");
                 }}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-gray-400 hover:text-white"
+                className="px-4 py-2 rounded-xl text-xs font-bold text-[#5C6B64] hover:text-[#0E2A20] cursor-pointer"
               >
                 Back
               </button>
@@ -1125,10 +1175,10 @@ export default function BookingModal({
                   setFormError(null);
                   setStep("PAYMENT");
                 }}
-                className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-neon-green text-dark hover:bg-neon-green/90 transition-all flex items-center gap-2 glow-neon-green"
+                className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-display font-bold bg-[#176B3A] text-white hover:bg-[#135830] transition-all flex items-center gap-2 shadow-sm cursor-pointer"
               >
-                Next: Payment ({formatPKR(grandTotal)})
-                <ArrowRight className="w-4 h-4" />
+                Pay {formatPKR(grandTotal)}
+                <ArrowRight className="w-4 h-4" weight="bold" />
               </button>
             </>
           )}
@@ -1140,17 +1190,17 @@ export default function BookingModal({
                   setFormError(null);
                   setStep("ADDONS_SQUAD");
                 }}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-gray-400 hover:text-white"
+                className="px-4 py-2 rounded-xl text-xs font-bold text-[#5C6B64] hover:text-[#0E2A20] cursor-pointer"
               >
                 Back
               </button>
               <button
                 disabled={isSubmitting}
                 onClick={handleConfirmBooking}
-                className="px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-neon-green text-dark hover:bg-neon-green/90 transition-all flex items-center gap-2 glow-neon-green disabled:opacity-50"
+                className="px-6 py-2.5 rounded-xl text-xs sm:text-sm font-display font-bold bg-[#176B3A] text-white hover:bg-[#135830] transition-all flex items-center gap-2 shadow-sm disabled:opacity-50 cursor-pointer"
               >
                 {isSubmitting ? "Locking Slot..." : "Lock & Confirm Booking"}
-                <CheckCircle2 className="w-4 h-4" />
+                <CheckCircle2 className="w-4 h-4" weight="duotone" />
               </button>
             </>
           )}
@@ -1167,17 +1217,17 @@ export default function BookingModal({
                     window.location.href = "/#my-bookings";
                   }
                 }}
-                className="flex-1 py-3 rounded-xl text-xs sm:text-sm font-extrabold bg-neon-green text-dark hover:bg-neon-green/90 transition-all flex items-center justify-center gap-1.5 glow-neon-green"
+                className="flex-1 py-3 rounded-xl text-xs sm:text-sm font-display font-extrabold bg-[#0E2A20] text-[#C8A838] hover:bg-[#143B2D] transition-all flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
               >
-                <CheckCircle2 className="w-4 h-4" />
-                View in My Bookings Hub
+                <CheckCircle2 className="w-4 h-4" weight="duotone" />
+                View in My Passes
               </button>
               <a
                 href="/caretaker"
-                className="px-4 py-3 rounded-xl text-xs sm:text-sm font-bold bg-dark-elevated text-neon-cyan hover:text-white border border-dark-border text-center flex items-center justify-center gap-1.5"
+                className="px-4 py-3 rounded-xl text-xs sm:text-sm font-bold bg-white text-[#0E2A20] hover:bg-[#EAEDEA] border border-[#E6E7E5] text-center flex items-center justify-center gap-1.5"
               >
-                <ShieldCheck className="w-4 h-4" />
-                Test PIN at Caretaker Portal
+                <ShieldCheck className="w-4 h-4 text-[#176B3A]" weight="duotone" />
+                Caretaker Portal
               </a>
             </div>
           )}

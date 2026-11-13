@@ -2,8 +2,9 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Trophy, Calendar, MapPin, Users, Award, ShieldAlert, ArrowRight, Check, Eye, X, QrCode } from "lucide-react";
+import { Trophy, MapPin, Check, Eye, X } from "@phosphor-icons/react";
 import { formatPKR } from "@/lib/utils";
+import { Card, Button, Badge, Input } from "@/components/ui";
 
 interface TournamentItem {
   id: string;
@@ -97,21 +98,21 @@ export default function TournamentSection() {
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-neon-yellow text-xs font-bold uppercase tracking-wider">
-              <Trophy className="w-4 h-4" />
+            <div className="flex items-center gap-2 text-[#176B3A] text-xs font-bold uppercase tracking-wider">
+              <Trophy className="w-4 h-4 text-[#C8A838]" weight="duotone" />
               Official KFC Tournament Ecosystem
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-display mt-1">
-              Active Tournaments & Cups
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0E2A20] font-display mt-1">
+              Active Tournaments &amp; Cups
             </h2>
-            <p className="text-xs sm:text-sm text-gray-400 mt-1 max-w-xl">
+            <p className="text-xs sm:text-sm text-[#5C6B64] mt-1 max-w-xl">
               Cryptographically randomized brackets, verified cash prize pools, and live match scoring across Pakistan.
             </p>
           </div>
-          <div className="flex items-center gap-2 text-xs font-bold text-gray-300">
-            <span className="w-2.5 h-2.5 rounded-full bg-neon-yellow animate-ping" />
+          <Badge tone="gold" className="self-start sm:self-auto py-1.5 px-3">
+            <span className="w-2 h-2 rounded-full bg-[#176B3A] animate-pulse" />
             <span>Registration Open for 3 Cups</span>
-          </div>
+          </Badge>
         </div>
 
         {/* Tournament Cards Grid */}
@@ -119,12 +120,13 @@ export default function TournamentSection() {
           {TOURNAMENTS.map((t) => {
             const isRegistered = registeredSquads[t.id];
             return (
-              <div
+              <Card
                 key={t.id}
-                className="bg-dark-card border border-dark-border rounded-2xl overflow-hidden hover:border-neon-yellow/60 transition-all flex flex-col group hover:shadow-neon-yellow/10 hover:shadow-xl"
+                interactive
+                className="overflow-hidden flex flex-col group"
               >
                 {/* Image */}
-                <div className="relative h-44 w-full overflow-hidden bg-dark-elevated">
+                <div className="relative h-44 w-full overflow-hidden bg-[#EAEDEA]">
                   <img
                     src={t.featuredImg}
                     alt={t.title}
@@ -133,15 +135,15 @@ export default function TournamentSection() {
                       (e.target as HTMLImageElement).src = "/images/grounds/football-11.jpg";
                     }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0C1611] via-[#0C1611]/30 to-transparent" />
-                  
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0E2A20]/80 via-[#0E2A20]/20 to-transparent" />
+
                   {/* Sport Pill */}
-                  <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase bg-dark/80 backdrop-blur-md text-neon-yellow border border-neon-yellow/40">
+                  <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase bg-[#0E2A20]/90 backdrop-blur-md text-[#C8A838] border border-[#C8A838]/40">
                     {t.sport}
                   </div>
 
                   {/* Prize Badge */}
-                  <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-lg bg-neon-yellow text-dark text-xs font-extrabold shadow-lg">
+                  <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-lg bg-[#C8A838] text-[#0E2A20] text-xs font-display font-extrabold shadow-md">
                     Prize: {formatPKR(t.prizePool)}
                   </div>
                 </div>
@@ -149,62 +151,67 @@ export default function TournamentSection() {
                 {/* Content */}
                 <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                   <div>
-                    <h3 className="text-base font-bold text-white group-hover:text-neon-yellow transition-colors font-display">
+                    <h3 className="text-base font-bold text-[#0E2A20] group-hover:text-[#176B3A] transition-colors font-display">
                       {t.title}
                     </h3>
-                    <div className="flex items-center gap-1.5 text-xs text-gray-400 mt-1">
-                      <MapPin className="w-3.5 h-3.5 text-neon-yellow" />
-                      <span>{t.venueName}</span>
+                    <div className="flex items-center gap-1.5 text-xs text-[#5C6B64] mt-1">
+                      <MapPin className="w-4 h-4 text-[#176B3A] shrink-0" weight="duotone" />
+                      <span className="line-clamp-1">{t.venueName}</span>
                     </div>
 
-                    <div className="mt-4 bg-dark-elevated p-3 rounded-xl border border-dark-border space-y-1.5 text-xs">
-                      <div className="flex justify-between text-gray-300">
+                    <div className="mt-4 bg-[#F4F5F3] p-3 rounded-xl border border-[#E6E7E5] space-y-1.5 text-xs">
+                      <div className="flex justify-between text-[#5C6B64]">
                         <span>Dates:</span>
-                        <strong className="text-white">{t.startDate}</strong>
+                        <strong className="text-[#0E2A20]">{t.startDate}</strong>
                       </div>
-                      <div className="flex justify-between text-gray-300">
+                      <div className="flex justify-between text-[#5C6B64]">
                         <span>Teams:</span>
-                        <strong className="text-white">{t.teamsCount}</strong>
+                        <strong className="text-[#0E2A20]">{t.teamsCount}</strong>
                       </div>
-                      <div className="flex justify-between text-gray-300">
+                      <div className="flex justify-between text-[#5C6B64]">
                         <span>Format:</span>
-                        <span className="text-gray-400 text-[11px] truncate max-w-[150px]">{t.format}</span>
+                        <span className="text-[#0E2A20] font-medium text-[11px] truncate max-w-[160px]">{t.format}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="pt-3 border-t border-dark-border space-y-2">
+                  <div className="pt-3 border-t border-[#E6E7E5] space-y-2">
                     <div className="flex items-center justify-between">
                       <div>
-                        <span className="text-[10px] text-gray-400 block">Entry Fee / Team</span>
-                        <span className="text-sm font-extrabold text-white">
+                        <span className="text-[10px] text-[#5C6B64] font-semibold uppercase tracking-wider block">
+                          Entry Fee / Team
+                        </span>
+                        <span className="text-sm font-display font-extrabold text-[#0E2A20]">
                           {formatPKR(t.entryFee)}
                         </span>
                       </div>
 
-                      <button
+                      <Button
+                        size="sm"
+                        variant={isRegistered ? "gold" : "secondary"}
                         onClick={() => handleOpenRegistration(t)}
-                        className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1 ${
-                          isRegistered
-                            ? "bg-neon-yellow text-dark font-extrabold shadow-md"
-                            : "bg-dark-elevated text-neon-yellow border border-neon-yellow/40 hover:bg-neon-yellow hover:text-dark"
-                        }`}
                       >
-                        {isRegistered ? <><Check className="w-3.5 h-3.5" /> Registered</> : "Register Squad"}
-                      </button>
+                        {isRegistered ? (
+                          <>
+                            <Check className="w-3.5 h-3.5" weight="bold" /> Registered
+                          </>
+                        ) : (
+                          "Register Squad"
+                        )}
+                      </Button>
                     </div>
 
                     <Link
                       href={`/tournament/${t.id}`}
-                      className="w-full py-2 rounded-xl bg-dark text-gray-300 hover:text-white hover:bg-dark-elevated border border-dark-border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
+                      className="w-full py-2 rounded-xl bg-[#F4F5F3] text-[#0E2A20] hover:bg-[#EAEDEA] border border-[#E6E7E5] text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
                     >
-                      <Eye className="w-3.5 h-3.5 text-neon-green" />
+                      <Eye className="w-4 h-4 text-[#176B3A]" weight="duotone" />
                       View Live Knockout Bracket Tree
                     </Link>
                   </div>
                 </div>
-              </div>
+              </Card>
             );
           })}
         </div>
@@ -212,109 +219,103 @@ export default function TournamentSection() {
 
       {/* SQUAD REGISTRATION MODAL */}
       {activeTourneyForReg && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="bg-[#0C1611] border border-[#17261E] rounded-2xl p-6 w-full max-w-md space-y-5 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0E2A20]/60 backdrop-blur-sm">
+          <div className="bg-white border border-[#E6E7E5] rounded-2xl p-6 w-full max-w-md space-y-5 shadow-2xl relative">
             <button
               onClick={() => setActiveTourneyForReg(null)}
-              className="absolute top-4 right-4 p-1.5 rounded-lg bg-dark-elevated text-gray-400 hover:text-white"
+              className="absolute top-4 right-4 p-1.5 rounded-lg bg-[#F4F5F3] text-[#5C6B64] hover:text-[#0E2A20] cursor-pointer"
             >
-              <X className="w-4 h-4" />
+              <X className="w-4 h-4" weight="bold" />
             </button>
 
             {!regSuccess ? (
               <form onSubmit={handleConfirmRegistration} className="space-y-4">
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-neon-yellow tracking-wider">
+                  <span className="text-[10px] uppercase font-bold text-[#176B3A] tracking-wider">
                     Official Squad Registration
                   </span>
-                  <h3 className="text-base font-bold text-white font-display mt-0.5">
+                  <h3 className="text-base font-bold text-[#0E2A20] font-display mt-0.5">
                     {activeTourneyForReg.title}
                   </h3>
-                  <p className="text-xs text-gray-400 mt-0.5">
-                    Entry Fee: <strong className="text-neon-green">{formatPKR(activeTourneyForReg.entryFee)}</strong> • {activeTourneyForReg.venueName}
+                  <p className="text-xs text-[#5C6B64] mt-0.5">
+                    Entry Fee: <strong className="text-[#176B3A]">{formatPKR(activeTourneyForReg.entryFee)}</strong> • {activeTourneyForReg.venueName}
                   </p>
                 </div>
 
                 <div className="space-y-3">
                   <div>
-                    <label className="text-[11px] font-bold text-gray-300 block mb-1">
+                    <label className="text-[11px] font-bold text-[#0E2A20] block mb-1">
                       Team / Squad Name
                     </label>
-                    <input
+                    <Input
                       type="text"
                       placeholder="e.g. Clifton Strikers FC"
                       value={teamName}
                       onChange={(e) => setTeamName(e.target.value)}
                       required
-                      className="w-full px-3 py-2 rounded-lg bg-dark border border-dark-border text-white text-xs focus:outline-none focus:border-neon-yellow"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-bold text-gray-300 block mb-1">
+                    <label className="text-[11px] font-bold text-[#0E2A20] block mb-1">
                       Captain Full Name
                     </label>
-                    <input
+                    <Input
                       type="text"
                       placeholder="e.g. Daniyal Ahmed"
                       value={captainName}
                       onChange={(e) => setCaptainName(e.target.value)}
                       required
-                      className="w-full px-3 py-2 rounded-lg bg-dark border border-dark-border text-white text-xs focus:outline-none focus:border-neon-yellow"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-bold text-gray-300 block mb-1">
+                    <label className="text-[11px] font-bold text-[#0E2A20] block mb-1">
                       Captain WhatsApp Number (For Bracket Alerts)
                     </label>
-                    <input
+                    <Input
                       type="tel"
                       placeholder="0300-1234567"
                       value={captainPhone}
                       onChange={(e) => setCaptainPhone(e.target.value)}
                       required
-                      className="w-full px-3 py-2 rounded-lg bg-dark border border-dark-border text-white text-xs focus:outline-none focus:border-neon-yellow"
                     />
                   </div>
                 </div>
 
-                <div className="bg-dark-elevated p-3 rounded-xl border border-dark-border text-[11px] text-gray-300 space-y-1">
+                <div className="bg-[#F4F5F3] p-3 rounded-xl border border-[#E6E7E5] text-[11px] text-[#5C6B64] space-y-1">
                   <div className="flex justify-between">
                     <span>Entry Fee:</span>
-                    <strong className="text-neon-green">{formatPKR(activeTourneyForReg.entryFee)}</strong>
+                    <strong className="text-[#176B3A]">{formatPKR(activeTourneyForReg.entryFee)}</strong>
                   </div>
                   <div className="flex justify-between">
                     <span>Payment Mode:</span>
-                    <span>Raast Transfer / Cash at Ground</span>
+                    <span className="text-[#0E2A20] font-medium">Raast Transfer / Cash at Ground</span>
                   </div>
                 </div>
 
                 {regError && (
-                  <p className="text-xs text-[#FF7A4D] bg-[#E94A10]/15 border border-[#E94A10]/30 px-3 py-2 rounded-lg">
+                  <p className="text-xs text-[#E94A10] bg-[#E94A10]/10 border border-[#E94A10]/25 px-3 py-2 rounded-lg">
                     {regError}
                   </p>
                 )}
 
-                <button
-                  type="submit"
-                  className="w-full py-3 rounded-xl bg-neon-yellow text-dark font-extrabold text-xs shadow-lg hover:bg-neon-yellow/90 transition-all flex items-center justify-center gap-1.5"
-                >
-                  <Trophy className="w-4 h-4" />
+                <Button type="submit" variant="primary" size="lg" className="w-full">
+                  <Trophy className="w-4 h-4" weight="duotone" />
                   Confirm Squad Registration
-                </button>
+                </Button>
               </form>
             ) : (
               <div className="text-center py-4 space-y-4">
-                <div className="w-14 h-14 rounded-full bg-neon-yellow/20 text-neon-yellow border border-neon-yellow/40 flex items-center justify-center mx-auto shadow-xl">
-                  <Check className="w-8 h-8" />
+                <div className="w-14 h-14 rounded-full bg-[#176B3A]/10 text-[#176B3A] border border-[#176B3A]/30 flex items-center justify-center mx-auto">
+                  <Check className="w-7 h-7" weight="bold" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-bold text-white font-display">Squad Registered!</h4>
-                  <p className="text-xs text-gray-300 mt-1">
-                    Team <strong>{teamName}</strong> is officially entered in the knockout draw.
+                  <h4 className="text-lg font-bold text-[#0E2A20] font-display">Squad Registered!</h4>
+                  <p className="text-xs text-[#5C6B64] mt-1">
+                    Team <strong className="text-[#0E2A20]">{teamName}</strong> is officially entered in the knockout draw.
                   </p>
-                  <p className="text-[11px] text-neon-yellow mt-1">
+                  <p className="text-[11px] text-[#176B3A] font-semibold mt-1">
                     Fixture alerts will be sent to WhatsApp: {captainPhone}
                   </p>
                 </div>
@@ -323,9 +324,9 @@ export default function TournamentSection() {
                   <Link
                     href={`/tournament/${activeTourneyForReg.id}`}
                     onClick={() => setActiveTourneyForReg(null)}
-                    className="w-full py-2.5 rounded-xl bg-dark-elevated text-neon-green border border-neon-green/40 text-xs font-bold flex items-center justify-center gap-1.5"
+                    className="w-full py-2.5 rounded-xl bg-[#0E2A20] text-[#C8A838] text-xs font-display font-bold flex items-center justify-center gap-1.5"
                   >
-                    <Eye className="w-4 h-4" />
+                    <Eye className="w-4 h-4" weight="duotone" />
                     View Tournament Bracket Draw
                   </Link>
                 </div>

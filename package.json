@@ -11,6 +11,7 @@
     "prisma:push": "prisma db push"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
     "@prisma/client": "^5.22.0",
     "clsx": "^2.1.1",
     "leaflet": "^1.9.4",
@@ -34,4 +35,3 @@
     "typescript": "^5"
   }
 }
-

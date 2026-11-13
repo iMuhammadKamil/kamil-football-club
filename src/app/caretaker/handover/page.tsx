@@ -1,4 +1,5 @@
 import React from "react";
+import AdminShell from "@/components/admin/AdminShell";
 import CaretakerShiftHandover from "@/components/CaretakerShiftHandover";
 
 export const metadata = {
@@ -8,9 +9,11 @@ export const metadata = {
 
 export default function CaretakerHandoverPage() {
   return (
-    <main className="min-h-screen bg-[#090D10] py-6 sm:py-10">
+    <AdminShell
+      title="Shift Handover Reconciliation"
+      subtitle="Audit cash collected at pitch against expected slot bookings before closing shift."
+    >
       <CaretakerShiftHandover />
-    </main>
+    </AdminShell>
   );
 }
-
